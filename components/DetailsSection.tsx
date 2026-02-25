@@ -3,11 +3,16 @@ import { motion } from 'framer-motion';
 
 export default function DetailsSection() {
   const fadeInUp = (delay: number) => ({
-    initial: { opacity: 0, y: 15 },
-    whileInView: { opacity: 1, y: 0 },
-    viewport: { once: true },
-    transition: { duration: 1.2, delay, ease: [0.22, 1, 0.36, 1] }
-  });
+  initial: { opacity: 0, y: 20 },
+  whileInView: { opacity: 1, y: 0 },
+  viewport: { once: true },
+  transition: { 
+    duration: 0.8, 
+    delay, 
+    // Tambah 'as any' di hujung array ease
+    ease: [0.33, 1, 0.68, 1] as any 
+  }
+});
 
   return (
     <section className="snap-start h-screen w-full bg-[#050505] relative flex flex-col items-center justify-center px-8 text-center overflow-hidden">
