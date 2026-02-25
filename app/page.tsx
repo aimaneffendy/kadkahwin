@@ -29,7 +29,7 @@ export default function KadKahwin() {
 
   return (
     <div className={`bg-black text-[#fbf8f4] font-serif relative ${isOpen ? 'h-screen overflow-y-scroll snap-y snap-mandatory scroll-smooth' : 'h-screen overflow-hidden'}`} style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}>
-      <audio ref={audioRef} loop src="/lagu.mp3" />
+      <audio ref={audioRef} loop src="/zapin.mp3" />
 
       <AnimatePresence mode="wait">
         {!isOpen && <EntranceSection key="entrance" onOpen={handleOpen} />}
