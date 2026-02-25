@@ -6,10 +6,16 @@ export default function HeroSection({ isOpen }: { isOpen: boolean }) {
   const premiumShadow = { filter: 'drop-shadow(0 2px 4px rgba(0,0,0,0.8))' };
   
   const fadeInUp = (delay: number) => ({
-    initial: { opacity: 0, y: 30 },
-    animate: isOpen ? { opacity: 1, y: 0 } : { opacity: 0, y: 30 },
-    transition: { duration: 1.2, delay, ease: [0.33, 1, 0.68, 1] }
-  });
+  initial: { opacity: 0, y: 20 },
+  animate: { opacity: 1, y: 0 },
+  whileInView: { opacity: 1, y: 0 },
+  viewport: { once: true },
+  transition: { 
+    duration: 0.8, 
+    delay, 
+    ease: [0.33, 1, 0.68, 1] as any // TAMBAH 'as any' KAT SINI
+  }
+});
 
   return (
     <section className="relative h-screen w-full flex flex-col items-center justify-center text-center px-6 overflow-hidden bg-black">
