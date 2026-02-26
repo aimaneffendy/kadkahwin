@@ -1,7 +1,6 @@
 @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;1,400&display=swap');
 @import "tailwindcss";
 
-/* Jika kau ada fail Signatie.otf, letak dalam public/fonts/ dan aktifkan kod bawah ni */
 @font-face {
   font-family: 'Signatie';
   src: url('/fonts/Signatie.otf') format('opentype');
@@ -12,7 +11,6 @@
 
 @theme {
   --font-serif: 'Playfair Display', serif;
-  /* Jika tiada Signatie.otf, dia akan fallback ke Great Vibes automatik */
   --font-script: 'Signatie', 'Great Vibes', cursive;
   --color-gold-primary: #d4af37;
 }
@@ -23,6 +21,25 @@
     color: #d4af37;
     font-family: 'Playfair Display', serif;
     -webkit-font-smoothing: antialiased;
+    /* Prevent horizontal scroll on mobile */
+    overflow-x: hidden;
+  }
+
+  /* GLOBAL MOBILE FIX: Paksa semua section h-screen jadi flexible */
+  @media (max-width: 768px) {
+    section.h-screen {
+      height: auto !important;
+      min-height: 100vh !important;
+      min-height: -webkit-fill-available !important; /* Fix untuk Safari iOS */
+      padding-top: 4rem !important;
+      padding-bottom: 4rem !important;
+    }
+
+    /* Kecilkan imej pengantin/logo secara automatik kat phone */
+    img {
+      max-width: 90% !important;
+      height: auto !important;
+    }
   }
 }
 
@@ -44,6 +61,11 @@
     color: #d4af37;
   }
 
+  .input-premium::placeholder {
+    color: rgba(212, 175, 55, 0.4);
+    font-style: italic;
+  }
+
   .btn-gold {
     border: 1px solid #d4af37;
     color: #d4af37;
@@ -54,10 +76,16 @@
     transition: all 0.5s;
     cursor: pointer;
     background: transparent;
+    text-align: center;
   }
 
   .btn-gold:hover {
     background: #d4af37;
     color: #000;
+  }
+
+  /* Utiliti tambahan untuk spacing mobile yang kemas */
+  .mobile-container {
+    @apply px-6 py-10 md:px-20 md:py-20 flex flex-col items-center justify-center;
   }
 }
