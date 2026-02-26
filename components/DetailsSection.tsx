@@ -2,116 +2,132 @@
 import { motion } from 'framer-motion';
 
 export default function DetailsSection() {
-  const fadeInUp = (delay: number) => ({
-  initial: { opacity: 0, y: 20 },
-  whileInView: { opacity: 1, y: 0 },
-  viewport: { once: true },
-  transition: { 
-    duration: 0.8, 
-    delay, 
-    // Tambah 'as any' di hujung array ease
-    ease: [0.33, 1, 0.68, 1] as any 
-  }
-});
+  // Animasi container untuk kesan staggered (muncul satu-satu)
+  const containerVariants = {
+    hidden: { opacity: 0 },
+    visible: {
+      opacity: 1,
+      transition: {
+        staggerChildren: 0.2, // Jeda 0.2s antara setiap element
+        delayChildren: 0.3,
+      },
+    },
+  };
+
+  const itemVariants = {
+    hidden: { opacity: 0, y: 20 },
+    visible: { 
+      opacity: 1, 
+      y: 0,
+      transition: { duration: 1, ease: [0.22, 1, 0.36, 1] }
+    },
+  };
 
   return (
-    <section className="snap-start h-screen w-full bg-[#050505] relative flex flex-col items-center justify-center px-8 text-center overflow-hidden">
+    <section className="snap-start h-screen w-full bg-[#050505] relative flex flex-col items-center justify-center px-6 overflow-hidden font-serif">
       
-      {/* 1. DYNAMIC BACKGROUND (Elemen yang bagi "hidup") */}
-      {/* Cahaya Emas Utama */}
-      <motion.div 
-        animate={{ 
-          scale: [1, 1.2, 1],
-          opacity: [0.3, 0.6, 0.3],
-        }}
-        transition={{ duration: 10, repeat: Infinity, ease: "easeInOut" }}
-        className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[500px] h-[500px] bg-[#a98d32]/10 blur-[120px] rounded-full pointer-events-none" 
-      />
-
-      {/* Floating Bokeh 1 */}
-      <motion.div 
-        animate={{ 
-          y: [0, -40, 0],
-          x: [0, 20, 0],
-          opacity: [0.1, 0.3, 0.1]
-        }}
-        transition={{ duration: 15, repeat: Infinity, ease: "easeInOut" }}
-        className="absolute top-[20%] right-[10%] w-32 h-32 bg-[#a98d32]/20 blur-[60px] rounded-full"
-      />
-
-      {/* Floating Bokeh 2 */}
-      <motion.div 
-        animate={{ 
-          y: [0, 40, 0],
-          x: [0, -20, 0],
-          opacity: [0.1, 0.2, 0.1]
-        }}
-        transition={{ duration: 18, repeat: Infinity, ease: "easeInOut", delay: 2 }}
-        className="absolute bottom-[20%] left-[10%] w-48 h-48 bg-[#a98d32]/15 blur-[80px] rounded-full"
-      />
-
-      {/* 2. MAIN CONTENT */}
-      <div className="z-10 w-full max-w-sm flex flex-col items-center">
-        
-        {/* BISMILLAH & SALAM */}
-        <motion.div {...fadeInUp(0.1)} className="mb-6 space-y-3">
-          <h2 className="text-[#fbf8f4] text-lg font-serif opacity-70 tracking-[0.3em] italic">
-            بِسْمِ اللهِ الرَّحْمٰنِ الرَّحِيْمِ
-          </h2>
-          <p className="text-[#a98d32]/60 text-[9px] tracking-[0.5em] uppercase font-light">Assalammualaikum W.B.T</p>
-        </motion.div>
-
-        {/* TUAN RUMAH (MAK AYAH) */}
-        <motion.div {...fadeInUp(0.3)} className="mb-8">
-          <div className="space-y-1">
-            <h3 className="text-[#d4b054] text-[15px] tracking-[0.15em] uppercase font-medium">Noor Effendy Bin Mohd Nor</h3>
-            <p className="text-[#a98d32]/40 text-xs font-serif italic">&</p>
-            <h3 className="text-[#d4b054] text-[15px] tracking-[0.15em] uppercase font-medium">Raba'iah Binti Kodri</h3>
-          </div>
-          <p className="text-[#fbf8f4]/50 text-[11px] font-light leading-relaxed max-w-[260px] mx-auto mt-6 italic font-serif">
-            Dengan penuh kesyukuran ke hadrat Ilahi, kami menjemput Tuan/Puan ke majlis walimatulurus putera kami:
-          </p>
-        </motion.div>
-
-        {/* NAMA PENGANTIN (Hero Elements) */}
-        <motion.div {...fadeInUp(0.5)} className="w-full space-y-4 py-2">
-          <div className="space-y-1 group">
-            <h4 className="text-[#fbf8f4] text-3xl font-serif italic tracking-wide group-hover:text-[#d4b054] transition-colors duration-700">
-              Muhammad Aiman
-            </h4>
-            <p className="text-[#a98d32]/40 text-[11px] font-serif italic">Bin Noor Effendy</p>
-          </div>
-
-          <div className="flex items-center justify-center gap-5">
-            <div className="h-[0.5px] w-12 bg-gradient-to-r from-transparent to-[#a98d32]/40" />
-            <span className="text-[#a98d32]/50 text-[10px] tracking-[0.4em] uppercase italic font-light">dengan</span>
-            <div className="h-[0.5px] w-12 bg-gradient-to-l from-transparent to-[#a98d32]/40" />
-          </div>
-
-          <div className="space-y-1 group">
-            <h4 className="text-[#fbf8f4] text-3xl font-serif italic tracking-wide group-hover:text-[#d4b054] transition-colors duration-700">
-              Adinda Fazliana
-            </h4>
-            <p className="text-[#a98d32]/40 text-[11px] font-serif italic">Binti Ramlie</p>
-          </div>
-        </motion.div>
-
-        {/* PENUTUP */}
-        <motion.div {...fadeInUp(0.7)} className="mt-12 pt-8 w-3/4 relative">
-          {/* Divider Line yang halus */}
-          <div className="absolute top-0 left-1/2 -translate-x-1/2 h-[0.5px] w-16 bg-gradient-to-r from-transparent via-[#a98d32]/40 to-transparent" />
-          
-          <p className="text-[#a98d32]/40 text-[9px] tracking-[0.4em] uppercase italic leading-loose">
-            Semoga kehadiran kalian <br /> menambah seri majlis kami
-          </p>
-        </motion.div>
-
+      {/* 1. BACKGROUND 2.WEBP - UPSIDE DOWN */}
+      <div className="absolute inset-0 z-0">
+        <motion.img 
+          initial={{ opacity: 0 }}
+          whileInView={{ opacity: 0.4 }}
+          transition={{ duration: 2 }}
+          src="/background2.webp"
+          className="w-full h-full object-cover object-center scale-y-[-1]"
+          alt="background"
+        />
+        <div className="absolute inset-0 bg-gradient-to-b from-black/60 via-transparent to-black/60" />
       </div>
 
-      {/* 3. FINAL TOUCH: VIGNETTE & GRAIN */}
-      <div className="absolute inset-0 pointer-events-none shadow-[inset_0_0_120px_rgba(0,0,0,0.8)]" />
-      <div className="absolute inset-0 bg-[url('https://www.transparenttextures.com/patterns/stardust.png')] opacity-[0.03] pointer-events-none" />
-      
+      {/* 2. MAIN CONTENT - WITH RE-TRIGGER ANIMATION */}
+      <motion.div 
+        variants={containerVariants}
+        initial="hidden"
+        whileInView="visible"
+        viewport={{ once: false, amount: 0.3 }} // Akan trigger setiap kali 30% section masuk skrin
+        className="z-10 w-full max-w-2xl flex flex-col items-center text-center space-y-6 md:space-y-8"
+      >
+        
+        {/* SALAM */}
+        <motion.div variants={itemVariants} className="mb-2">
+          <h2 className="text-[#fbf8f4] text-4xl md:text-6xl font-normal opacity-90 leading-relaxed tracking-normal">
+            السَّلاَمُ عَلَيْكُمْ
+          </h2>
+          <div className="h-[1px] w-12 bg-[#a98d32]/30 mx-auto mt-2" />
+        </motion.div>
+
+        {/* TUAN RUMAH */}
+        <motion.div variants={itemVariants} className="space-y-2">
+          <h3 className="text-[#dbc677] text-lg md:text-xl tracking-[0.15em] uppercase font-light leading-tight">
+            Noor Effendy bin Mohd Nor
+          </h3>
+          <p className="text-white/30 text-sm italic font-serif">&</p>
+          <h3 className="text-[#dbc677] text-lg md:text-xl tracking-[0.15em] uppercase font-light leading-tight">
+            Raba'iah binti Kodri
+          </h3>
+        </motion.div>
+
+        {/* JEMPUTAN */}
+        <motion.div variants={itemVariants} className="space-y-5">
+          <p className="text-white/60 text-[13px] md:text-sm tracking-[0.2em] uppercase font-light leading-relaxed">
+            Kami Dengan Rasa Penuh Kesyukuran <br/> & Sukacita Menjemput
+          </p>
+          
+          <div className="py-1">
+            <span className="text-[#dbc677] text-[12px] md:text-sm tracking-[0.3em] uppercase font-semibold border-y border-[#a98d32]/20 py-3 px-8 block md:inline-block">
+              Dato' / Datin / Tuan / Puan / Encik / Cik
+            </span>
+          </div>
+
+          <p className="text-white/60 text-[13px] md:text-sm tracking-[0.2em] uppercase font-light">
+            Ke Raikan Cinta Putera Kami
+          </p>
+        </motion.div>
+
+        {/* NAMA PENGANTIN */}
+        <motion.div variants={itemVariants} className="w-full space-y-5 py-2 relative">
+          <div className="absolute left-1/2 -translate-x-1/2 top-0 h-[0.5px] w-20 bg-gradient-to-r from-transparent via-[#a98d32]/40 to-transparent" />
+          
+          <div className="space-y-5">
+            <h4 className="text-[#fbf8f4] text-3xl md:text-5xl lg:text-6xl font-extralight italic leading-tight tracking-tight px-4">
+              Muhammad Aiman <br className="md:hidden" /> bin Noor Effendy
+            </h4>
+
+            <div className="flex flex-col items-center gap-2">
+              <p className="text-[#a98d32]/50 text-[10px] tracking-[0.5em] uppercase italic font-medium">Dengan Pasangannya</p>
+              <div className="h-[0.5px] w-16 bg-[#a98d32]/30" />
+            </div>
+
+            <h4 className="text-[#fbf8f4] text-3xl md:text-5xl lg:text-6xl font-extralight italic leading-tight tracking-tight px-4">
+              Adinda Fazliana <br className="md:hidden" /> binti Ramlie
+            </h4>
+          </div>
+          
+          <div className="absolute left-1/2 -translate-x-1/2 bottom-0 h-[0.5px] w-20 bg-gradient-to-r from-transparent via-[#a98d32]/40 to-transparent" />
+        </motion.div>
+      </motion.div>
+
+      {/* 3. SCROLL HINT */}
+      <motion.div 
+        initial={{ opacity: 0 }}
+        whileInView={{ opacity: 1 }}
+        transition={{ delay: 2 }}
+        className="absolute bottom-8 flex flex-col items-center gap-2 pointer-events-none z-20"
+      >
+        <span className="text-[#a98d32]/50 text-[9px] tracking-[0.5em] uppercase font-light">Butiran Majlis</span>
+        <motion.div
+          animate={{ y: [0, 8, 0] }}
+          transition={{ duration: 2, repeat: Infinity, ease: "easeInOut" }}
+          className="text-[#a98d32]/50"
+        >
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1" strokeLinecap="round" strokeLinejoin="round">
+            <path d="M7 13l5 5 5-5M7 6l5 5 5-5" />
+          </svg>
+        </motion.div>
+      </motion.div>
+
+      {/* TEXTURE OVERLAYS */}
+      <div className="absolute inset-0 opacity-[0.03] pointer-events-none bg-[url('https://www.transparenttextures.com/patterns/black-paper.png')] z-1" />
     </section>
   );
 }

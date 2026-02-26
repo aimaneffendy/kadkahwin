@@ -1,41 +1,55 @@
 'use client';
 import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Send, CheckCircle2, XCircle, Loader2, Users, Heart } from 'lucide-react';
+import { Check, Loader2, Users } from 'lucide-react';
 import { supabase } from '@/lib/supabase'; 
 
 export default function RSVPSection() {
   const [formData, setFormData] = useState({ nama: '', pax: 1, hadir: true });
   const [totalHadir, setTotalHadir] = useState(0);
+  const [guestList, setGuestList] = useState<string[]>([]);
+  const [currentIndex, setCurrentIndex] = useState(0);
   const [loading, setLoading] = useState(false);
   const [submitted, setSubmitted] = useState(false);
+
+  useEffect(() => {
+    const hasSubmitted = localStorage.getItem('rsvp_submitted');
+    if (hasSubmitted) setSubmitted(true);
+    fetchStats();
+  }, []);
 
   const fetchStats = async () => {
     const { data, error } = await supabase
       .from('rsvp')
-      .select('pax')
+      .select('nama, pax')
       .eq('hadir', true);
     
     if (!error && data) {
       const total = data.reduce((acc, curr) => acc + (curr.pax || 0), 0);
       setTotalHadir(total);
+      const names = data.map(item => item.nama).filter(Boolean);
+      setGuestList(names.length > 0 ? names : ["Sertai senarai tetamu..."]);
     }
   };
 
-  useEffect(() => { fetchStats(); }, []);
+  useEffect(() => {
+    if (guestList.length <= 1) return;
+    const timer = setInterval(() => {
+      setCurrentIndex((prev) => (prev + 1) % guestList.length);
+    }, 3000);
+    return () => clearInterval(timer);
+  }, [guestList]);
 
-  const handleSubmit = async () => {
-    if (!formData.nama) return alert("Mohon titipkan nama anda.");
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!formData.nama) return alert("Mohon masukkan nama anda.");
     setLoading(true);
     const { error } = await supabase
       .from('rsvp')
-      .insert([{ 
-        nama: formData.nama, 
-        hadir: formData.hadir, 
-        pax: formData.hadir ? formData.pax : 0 
-      }]);
+      .insert([{ nama: formData.nama, hadir: formData.hadir, pax: formData.hadir ? formData.pax : 0 }]);
 
     if (!error) {
+      localStorage.setItem('rsvp_submitted', 'true');
       setSubmitted(true);
       fetchStats();
     }
@@ -43,147 +57,159 @@ export default function RSVPSection() {
   };
 
   return (
-    <section className="h-screen w-full relative bg-[#050505] flex flex-col items-center justify-center px-8 overflow-hidden">
+    <section className="min-h-screen w-full relative bg-[#050505] overflow-hidden flex flex-col font-serif py-20 px-10">
       
-      {/* Background Ambience */}
-      <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-full h-full">
-        <div className="absolute top-[-10%] left-[-10%] w-[400px] h-[400px] bg-[#a98d32]/5 blur-[120px] rounded-full" />
-        <div className="absolute bottom-[-10%] right-[-10%] w-[400px] h-[400px] bg-[#a98d32]/5 blur-[120px] rounded-full" />
+      {/* BACKGROUND IMAGE */}
+      <div className="absolute inset-0 w-full h-full">
+        <motion.img 
+          initial={{ opacity: 0 }}
+          whileInView={{ opacity: 0.6 }}
+          transition={{ duration: 2.5 }}
+          src="/background2.webp" 
+          className="w-full h-full object-cover"
+          alt="RSVP Background"
+        />
+        <div className="absolute inset-0 bg-gradient-to-t from-transparent via-black/40 to-black/90" />
       </div>
 
-      <div className="z-10 w-full max-w-sm">
+      <div className="relative z-10 max-w-4xl mx-auto w-full flex flex-col h-full">
         
-        {/* INTRO TEXT */}
-        <motion.div 
-          initial={{ opacity: 0, y: 20 }}
+        {/* HEADER */}
+        <motion.div
+          initial={{ opacity: 0, y: 30 }}
           whileInView={{ opacity: 1, y: 0 }}
-          className="text-center mb-10"
+          transition={{ duration: 1 }}
+          className="mb-10"
         >
-          <Heart size={20} className="text-[#a98d32]/40 mx-auto mb-4" />
-          <h2 className="text-[#fbf8f4] text-4xl font-serif italic mb-4">RSVP</h2>
-          <p className="text-[#fbf8f4]/60 text-xs leading-relaxed font-light italic px-4">
-            "Kehadiran serta doa restu kalian amat bermakna bagi kami dalam meraikan lembaran baharu ini."
-          </p>
-          <div className="h-[0.5px] w-20 bg-gradient-to-r from-transparent via-[#a98d32]/40 to-transparent mx-auto mt-6" />
+          <div className="flex items-center gap-3 mb-4">
+            <span className="h-[1px] w-10 bg-[#a98d32]" />
+            <p className="text-[#a98d32] text-[9px] tracking-[0.6em] uppercase font-bold">Pengesahan Kehadiran</p>
+          </div>
+          <h2 className="text-[#dbc677] text-6xl md:text-8xl font-light leading-[0.85] tracking-tighter uppercase">
+            Daftar <br />
+            <span className="italic font-extralight lowercase opacity-80 text-white">Kehadiran.</span>
+          </h2>
+          
+          {/* COMBINED LIVE GUEST CARD */}
+          <div className="mt-8 overflow-hidden bg-black/40 border border-[#a98d32]/20 w-fit min-w-[240px] rounded-xl backdrop-blur-md">
+            {/* Top Part: Counter */}
+            <div className="px-4 py-3 border-b border-[#a98d32]/10 flex items-center gap-3">
+              <span className="relative flex h-2 w-2">
+                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-[#dbc677] opacity-75"></span>
+                <span className="relative inline-flex rounded-full h-2 w-2 bg-[#dbc677]"></span>
+              </span>
+              <p className="text-[#a98d32] text-[10px] tracking-[0.2em] font-bold uppercase font-sans">
+                <span className="text-[#dbc677] text-sm mr-1 font-sans">{totalHadir}</span> Telah Mengesahkan Kehadiran
+              </p>
+            </div>
+
+            {/* Bottom Part: Scrolling Names */}
+            <div className="px-4 py-2 bg-white/[0.02] h-10 flex items-center">
+                <div className="flex items-center gap-2 w-full">
+                    <span className="text-white/20 text-[8px] uppercase tracking-widest font-sans font-bold">Live:</span>
+                    <div className="relative h-5 flex-1 overflow-hidden">
+                        <AnimatePresence mode="wait">
+                        <motion.p
+                            key={currentIndex}
+                            initial={{ y: 15, opacity: 0 }}
+                            animate={{ y: 0, opacity: 1 }}
+                            exit={{ y: -15, opacity: 0 }}
+                            transition={{ duration: 0.5 }}
+                            className="absolute text-white/80 text-[10px] uppercase tracking-[0.15em] font-sans truncate pr-4"
+                        >
+                            {guestList[currentIndex]}
+                        </motion.p>
+                        </AnimatePresence>
+                    </div>
+                </div>
+            </div>
+          </div>
         </motion.div>
 
         {!submitted ? (
-          <motion.div 
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            className="space-y-5"
-          >
-            {/* LIVE COUNTER TAG */}
-            <div className="flex justify-center mb-2">
-              <div className="bg-white/[0.03] border border-white/10 px-4 py-1.5 rounded-full flex items-center gap-3 shadow-xl">
-                <span className="relative flex h-2 w-2">
-                  <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-[#a98d32] opacity-75"></span>
-                  <span className="relative inline-flex rounded-full h-2 w-2 bg-[#d4b054]"></span>
-                </span>
-                <p className="text-[#fbf8f4]/40 text-[9px] tracking-[0.2em] font-bold uppercase">
-                  {totalHadir} Tetamu Telah Mengesahkan
-                </p>
-              </div>
-            </div>
-
-            {/* INPUT FIELD */}
-            <div className="relative group">
+          <motion.form onSubmit={handleSubmit} className="space-y-8">
+            <div className="relative">
+              <label className="text-[#dbc677] text-[9px] tracking-[0.3em] uppercase font-black mb-1 block">Nama Penuh</label>
               <input 
+                required
                 type="text"
-                placeholder="Nama Penuh"
-                className="w-full bg-white/[0.03] border border-white/10 rounded-2xl px-5 py-4 text-[#fbf8f4] text-sm outline-none focus:border-[#a98d32]/50 transition-all placeholder:text-white/10 shadow-inner"
+                placeholder="NAMA ANDA"
+                value={formData.nama}
+                className="w-full bg-transparent border-b border-[#a98d32]/40 py-3 text-white text-lg focus:outline-none focus:border-[#dbc677] transition-colors placeholder:text-white/10 uppercase tracking-widest"
                 onChange={(e) => setFormData({...formData, nama: e.target.value})}
               />
             </div>
 
-            {/* BUTTON SELECTION */}
-            <div className="grid grid-cols-2 gap-4">
-              <button 
-                onClick={() => setFormData({...formData, hadir: true})}
-                className={`group relative overflow-hidden py-4 rounded-2xl border transition-all duration-500 ${
-                  formData.hadir 
-                  ? 'border-[#a98d32] bg-[#a98d32]/10 text-[#d4b054]' 
-                  : 'border-white/5 bg-white/[0.02] text-white/20'
-                }`}
-              >
-                <div className="flex flex-col items-center gap-1 relative z-10">
-                  <CheckCircle2 size={16} className={formData.hadir ? 'scale-110 transition-transform' : ''} />
-                  <span className="text-[9px] font-bold uppercase tracking-widest">Akan Hadir</span>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+              <div className="space-y-3">
+                <label className="text-[#dbc677] text-[9px] tracking-[0.3em] uppercase font-black block">Status</label>
+                <div className="flex gap-3">
+                  <button
+                    type="button"
+                    onClick={() => setFormData({...formData, hadir: true})}
+                    className={`flex-1 py-3 border transition-all text-[9px] tracking-[0.2em] uppercase font-bold backdrop-blur-md ${
+                      formData.hadir ? 'bg-[#dbc677] text-black border-[#dbc677]' : 'border-[#a98d32]/40 text-white/40 bg-black/40'
+                    }`}
+                  > Akan Hadir </button>
+                  <button
+                    type="button"
+                    onClick={() => setFormData({...formData, hadir: false})}
+                    className={`flex-1 py-3 border transition-all text-[9px] tracking-[0.2em] uppercase font-bold backdrop-blur-md ${
+                      !formData.hadir ? 'bg-white text-black border-white' : 'border-[#a98d32]/40 text-white/40 bg-black/40'
+                    }`}
+                  > Maaf </button>
                 </div>
-              </button>
+              </div>
 
-              <button 
-                onClick={() => setFormData({...formData, hadir: false})}
-                className={`group relative overflow-hidden py-4 rounded-2xl border transition-all duration-500 ${
-                  !formData.hadir 
-                  ? 'border-red-500/50 bg-red-500/5 text-red-500' 
-                  : 'border-white/5 bg-white/[0.02] text-white/20'
-                }`}
-              >
-                <div className="flex flex-col items-center gap-1 relative z-10">
-                  <XCircle size={16} />
-                  <span className="text-[9px] font-bold uppercase tracking-widest">Tidak Hadir</span>
-                </div>
-              </button>
+              <AnimatePresence mode="wait">
+                {formData.hadir && (
+                  <motion.div initial={{ opacity: 0, x: 10 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: 10 }} className="space-y-3">
+                    <label className="text-[#dbc677] text-[9px] tracking-[0.3em] uppercase font-black block">Bilangan Pax</label>
+                    <div className="flex gap-2">
+                      {[1, 2, 3, 4, 5].map((num) => (
+                        <button
+                          key={num}
+                          type="button"
+                          onClick={() => setFormData({...formData, pax: num})}
+                          className={`w-10 h-10 border transition-all text-[13px] font-bold font-sans backdrop-blur-md ${
+                            formData.pax === num ? 'border-[#dbc677] text-[#dbc677] bg-[#dbc677]/20' : 'border-[#a98d32]/30 text-white/20 bg-black/40'
+                          }`}
+                        > {num} </button>
+                      ))}
+                    </div>
+                  </motion.div>
+                )}
+              </AnimatePresence>
             </div>
 
-            {/* PAX SELECTOR */}
-            <AnimatePresence mode="wait">
-              {formData.hadir && (
-                <motion.div 
-                  initial={{ opacity: 0, y: -10 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  exit={{ opacity: 0, y: -10 }}
-                  className="space-y-2 bg-white/[0.02] border border-white/5 rounded-2xl p-4"
-                >
-                  <label className="text-[8px] text-[#a98d32]/60 uppercase tracking-widest block text-center mb-2">Bilangan Pax</label>
-                  <div className="flex justify-center gap-3">
-                    {[1, 2, 3, 4, 5].map((num) => (
-                      <button
-                        key={num}
-                        onClick={() => setFormData({...formData, pax: num})}
-                        className={`w-10 h-10 rounded-full border text-xs transition-all ${
-                          formData.pax === num 
-                          ? 'bg-[#d4b054] border-[#d4b054] text-black font-bold' 
-                          : 'border-white/10 text-white/30 hover:border-white/30'
-                        }`}
-                      >
-                        {num}
-                      </button>
-                    ))}
-                  </div>
-                </motion.div>
-              )}
-            </AnimatePresence>
-
-            {/* SUBMIT */}
-            <button 
-              onClick={handleSubmit}
-              disabled={loading || !formData.nama}
-              className="w-full py-5 bg-[#d4b054] text-black rounded-full font-bold text-[10px] tracking-[0.4em] uppercase flex items-center justify-center gap-3 disabled:opacity-30 transition-all shadow-[0_10px_30px_rgba(212,176,84,0.15)] mt-4 active:scale-95"
-            >
-              {loading ? <Loader2 className="animate-spin" /> : "Sahkan Kehadiran"}
-            </button>
-          </motion.div>
+            <div className="pt-4">
+              <button
+                disabled={loading || !formData.nama}
+                type="submit"
+                className="w-full md:w-max md:px-12 h-14 bg-[#dbc677] flex items-center justify-center gap-4 transition-all shadow-xl disabled:opacity-20 active:scale-[0.98]"
+              >
+                {loading ? <Loader2 className="animate-spin text-black" size={18} /> : (
+                  <>
+                    <span className="text-black text-[11px] font-black tracking-[0.4em] uppercase">Sahkan Respon</span>
+                    <Check size={14} className="text-black" />
+                  </>
+                )}
+              </button>
+            </div>
+          </motion.form>
         ) : (
-          <motion.div 
-            initial={{ scale: 0.9, opacity: 0 }} 
-            animate={{ scale: 1, opacity: 1 }}
-            className="text-center p-12 bg-white/[0.03] border border-white/10 rounded-[3rem] shadow-2xl backdrop-blur-sm"
-          >
-            <div className="w-16 h-16 bg-green-500/10 rounded-full flex items-center justify-center mx-auto mb-6">
-              <CheckCircle2 size={32} className="text-green-500" />
+          <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} className="py-12 flex flex-col items-start">
+            <div className="mb-6 w-12 h-12 rounded-full border border-[#dbc677]/30 flex items-center justify-center backdrop-blur-md bg-black/20">
+              <Check size={24} className="text-[#dbc677]" />
             </div>
-            <h3 className="text-[#fbf8f4] text-2xl font-serif italic mb-3">Terima Kasih</h3>
-            <p className="text-white/40 text-[11px] leading-relaxed font-light italic px-4 uppercase tracking-widest">
-              Data anda telah selamat direkodkan. Jumpa anda di hari bahagia kami!
+            <h3 className="text-[#dbc677] text-4xl font-light tracking-tighter italic mb-3">Disahkan.</h3>
+            <p className="text-white/60 text-[10px] tracking-[0.2em] uppercase leading-relaxed max-w-xs font-sans">
+              Terima kasih. Respon anda telah selamat direkodkan. Jumpa anda di hari bahagia nanti.
             </p>
           </motion.div>
         )}
-      </div>
 
-      {/* Decorative Texture */}
-      <div className="absolute inset-0 bg-[url('https://www.transparenttextures.com/patterns/stardust.png')] opacity-[0.05] pointer-events-none" />
+      </div>
     </section>
   );
 }

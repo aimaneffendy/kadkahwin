@@ -1,5 +1,5 @@
 'use client';
-import { motion } from 'framer-motion';
+import { motion, AnimatePresence } from 'framer-motion';
 import { useState, useEffect } from 'react';
 
 interface EntranceSectionProps {
@@ -8,14 +8,13 @@ interface EntranceSectionProps {
 
 export default function EntranceSection({ onOpen }: EntranceSectionProps) {
   const [timeLeft, setTimeLeft] = useState({ days: 0, hours: 0, mins: 0, secs: 0 });
+  const [isTransitioning, setIsTransitioning] = useState(false);
 
   useEffect(() => {
     const targetDate = new Date('2026-06-14T11:00:00');
-
     const timer = setInterval(() => {
       const now = new Date();
       const difference = targetDate.getTime() - now.getTime();
-
       if (difference <= 0) {
         clearInterval(timer);
       } else {
@@ -27,14 +26,68 @@ export default function EntranceSection({ onOpen }: EntranceSectionProps) {
         });
       }
     }, 1000);
-
     return () => clearInterval(timer);
   }, []);
+
+  const handleOpen = () => {
+    setIsTransitioning(true);
+    // 2 saat untuk loading animation yang tenang
+    setTimeout(() => {
+      onOpen();
+    }, 2200);
+  };
 
   return (
     <section className="relative h-screen w-full flex flex-col items-center justify-center overflow-hidden bg-[#050505]">
       
-      {/* 1. BACKGROUND DENGAN SLOW ZOOM */}
+      {/* ==========================================================
+          STYLISH GOLD LOADER LAYER
+      ========================================================== */}
+      <AnimatePresence>
+        {isTransitioning && (
+          <motion.div 
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="absolute inset-0 z-[100] bg-black flex flex-col items-center justify-center"
+          >
+            {/* Background Soft Glow */}
+            <motion.div 
+              animate={{ opacity: [0.2, 0.5, 0.2] }}
+              transition={{ duration: 2, repeat: Infinity }}
+              className="absolute w-40 h-40 bg-[#d4b054] rounded-full blur-[80px]"
+            />
+
+            {/* Elegant Spinning Ring */}
+            <div className="relative w-16 h-16">
+              {/* Outer Ring */}
+              <motion.div 
+                animate={{ rotate: 360 }}
+                transition={{ duration: 1.5, repeat: Infinity, ease: "linear" }}
+                className="absolute inset-0 border-t-2 border-r-2 border-[#d4b054] rounded-full"
+              />
+              {/* Inner Slow Ring */}
+              <motion.div 
+                animate={{ rotate: -360 }}
+                transition={{ duration: 3, repeat: Infinity, ease: "linear" }}
+                className="absolute inset-2 border-b-2 border-l-2 border-[#a98d32]/30 rounded-full"
+              />
+            </div>
+
+            {/* Subtle Text */}
+            <motion.p
+              initial={{ opacity: 0, y: 10 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.5, duration: 1 }}
+              className="mt-8 text-[#d4b054]/60 text-[10px] tracking-[0.8em] uppercase font-light"
+            >
+              Memulakan Warkah
+            </motion.p>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
+      {/* BACKGROUND AREA (Kekal asal) */}
       <motion.div 
         initial={{ scale: 1.1 }}
         animate={{ scale: 1 }}
@@ -47,22 +100,19 @@ export default function EntranceSection({ onOpen }: EntranceSectionProps) {
           className="w-full h-full object-cover opacity-80"
         />
         <div className="absolute inset-0 bg-black/40" />
-        <div className="absolute inset-0 bg-gradient-to-b from-transparent via-black/20 to-black/90" />
       </motion.div>
 
-      {/* 2. CONTENT AREA */}
+      {/* CONTENT AREA (Kekal asal) */}
       <div className="z-10 w-full text-center flex flex-col items-center justify-center px-6 mt-6">
-        
         <motion.p 
           initial={{ opacity: 0, y: 10 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 1 }}
-          className="text-[#a98d32]/60 text-[10px] tracking-[0.7em] uppercase mb-10 w-full"
+          className="text-[#a98d32]/60 text-[16px] tracking-[0.7em] uppercase mb-10 w-full"
         >
-          Walimatulurus
+          Walimatul Urus
         </motion.p>
         
-        {/* 3. HERO IMAGE (Floating) */}
         <motion.div
           initial={{ opacity: 0, y: 5 }}
           animate={{ opacity: 1, y: -5 }}
@@ -79,7 +129,6 @@ export default function EntranceSection({ onOpen }: EntranceSectionProps) {
           />
         </motion.div>
 
-        {/* NAMA PENGANTIN - Huruf Kecil untuk are getting married */}
         <motion.div
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
@@ -89,12 +138,12 @@ export default function EntranceSection({ onOpen }: EntranceSectionProps) {
           <h1 className="text-[#d4b054] text-3xl md:text-4xl font-serif tracking-[0.05em] italic leading-tight">
             Aiman & Adinda
           </h1>
-          <p className="text-[#a98d32]/50 text-[11px] font-light lowercase italic tracking-[0.1em]">
-            are getting married
+          <p className="text-[#a98d32]/50 text-[16px] font-light lowercase italic tracking-[0.1em]">
+            are getting married!
           </p>
         </motion.div>
 
-        {/* 4. COUNTDOWN TIMER (Ganti Tarikh Statik) */}
+        {/* COUNTDOWN */}
         <motion.div
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
@@ -114,15 +163,15 @@ export default function EntranceSection({ onOpen }: EntranceSectionProps) {
           ))}
         </motion.div>
 
-        {/* 5. BUTTON WITH BLINK & SHINE */}
+        {/* BUTTON */}
         <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 1.1 }}>
           <motion.button
-            onClick={onOpen}
+            onClick={handleOpen}
             animate={{ boxShadow: ["0 0 0px 0px rgba(197,160,68,0)", "0 0 15px 2px rgba(197,160,68,0.4)", "0 0 0px 0px rgba(197,160,68,0)"] }}
             transition={{ duration: 2, repeat: Infinity, ease: "easeInOut" }}
             whileHover={{ scale: 1.05 }}
             whileTap={{ scale: 0.95 }}
-            className="group relative overflow-hidden px-10 py-3 bg-[#c5a044] text-black text-[11px] font-bold tracking-[0.3em] uppercase rounded-full transition-all"
+            className="group relative overflow-hidden px-10 py-3 bg-[#c5a044] text-black text-[11px] font-bold tracking-[0.3em] uppercase rounded-full"
           >
             <motion.div 
               animate={{ x: ['-100%', '200%'] }}
@@ -132,7 +181,6 @@ export default function EntranceSection({ onOpen }: EntranceSectionProps) {
             <span className="relative z-10">Buka Jemputan</span>
           </motion.button>
         </motion.div>
-
       </div>
     </section>
   );

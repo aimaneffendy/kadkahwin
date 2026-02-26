@@ -1,38 +1,97 @@
 'use client';
 import { motion } from 'framer-motion';
+import { useMemo } from 'react';
+
+// Komponen Partikel Emas (Golden Dust)
+const GoldenDust = ({ delay, duration, x, y, size }: { delay: number; duration: number; x: number; y: number; size: number }) => (
+  <motion.div
+    className="absolute rounded-full bg-[#dbc677] blur-[0.5px]"
+    initial={{ opacity: 0, x: `${x}vw`, y: `${y}vh` }}
+    animate={{ 
+      opacity: [0, 0.6, 0], 
+      y: [`${y}vh`, `${y - 12}vh`],
+      x: [`${x}vw`, `${x + (Math.random() > 0.5 ? 1 : -1)}vw`],
+    }}
+    transition={{ duration, delay, repeat: Infinity, ease: "linear" }}
+    style={{ width: size, height: size }}
+  />
+);
 
 export default function QuoteSection() {
-  const premiumShadow = { filter: 'drop-shadow(0 2px 4px rgba(0,0,0,0.8))' };
+  const dustParticles = useMemo(() => {
+    return Array.from({ length: 40 }).map((_, i) => ({
+      id: i,
+      delay: Math.random() * 10,
+      duration: 6 + Math.random() * 8,
+      x: Math.random() * 100,
+      y: Math.random() * 100,
+      size: 1 + Math.random() * 1.5,
+    }));
+  }, []);
 
   return (
-    <section className="snap-start h-screen w-full bg-[#050505] relative flex items-center justify-center px-8 overflow-hidden">
-      <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[60%] h-[40%] bg-[#a98d32]/5 blur-[120px] rounded-full pointer-events-none" />
-
-      <div className="max-w-2xl w-full text-center z-10 space-y-12">
-        <motion.div initial={{ opacity: 0 }} whileInView={{ opacity: 0.4 }} transition={{ duration: 1.5 }} className="flex justify-center items-center gap-4">
-          <div className="h-[0.5px] w-12 bg-[#fbf8f4]/20" />
-          <span className="text-[#a98d32] text-xl">✨</span>
-          <div className="h-[0.5px] w-12 bg-[#fbf8f4]/20" />
-        </motion.div>
-
-        <motion.div initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} transition={{ duration: 1.5, delay: 0.3 }} className="space-y-6">
-          {/* Teks Putih -> #fbf8f4 */}
-          <p className="text-[#fbf8f4]/90 text-lg md:text-xl italic font-light leading-relaxed tracking-wide" style={premiumShadow}>
-            "Dan di antara tanda-tanda kekuasaan-Nya ialah Dia menciptakan untukmu isteri-isteri dari jenismu sendiri, supaya kamu cenderung dan merasa tenteram kepadanya, dan dijadikan-Nya diantaramu rasa kasih dan sayang."
-          </p>
-          <p className="text-[#a98d32] text-[10px] md:text-xs uppercase tracking-[0.4em] font-bold opacity-80">
-            — Surah Ar-Rum: 21 —
-          </p>
-        </motion.div>
-
-        <motion.div initial={{ opacity: 0 }} whileInView={{ opacity: 1 }} transition={{ duration: 2, delay: 1 }} className="pt-8 border-t border-[#fbf8f4]/5">
-          {/* Teks Putih -> #fbf8f4 */}
-          <p className="text-[#fbf8f4]/40 text-[11px] md:text-sm leading-loose tracking-widest uppercase">
-            Semoga ikatan ini diberkati Allah SWT <br /> 
-            dan kekal hingga ke Jannah.
-          </p>
-        </motion.div>
+    <section className="snap-start h-screen w-full bg-[#050505] relative flex items-center justify-center overflow-hidden font-serif">
+      
+      {/* 1. BACKGROUND IMAGE - INVERTED (Focus Left) */}
+      <div className="absolute inset-0 z-0">
+        <motion.img 
+          initial={{ opacity: 0 }}
+          whileInView={{ opacity: 0.3 }}
+          transition={{ duration: 2 }}
+          src="/backgroundmain3.webp" 
+          className="w-full h-full object-cover object-left"
+          alt="background"
+        />
+        <div className="absolute inset-0 bg-gradient-to-b from-black via-transparent to-black" />
       </div>
+
+      {/* 2. GOLDEN SHIMMER DUST */}
+      <div className="absolute inset-0 z-5 pointer-events-none">
+        {dustParticles.map(p => <GoldenDust key={p.id} {...p} />)}
+      </div>
+
+      {/* 3. VOGUE EDITORIAL CONTENT */}
+      <div className="relative z-10 max-w-5xl w-full px-10 md:px-20 grid grid-cols-1 md:grid-cols-12 gap-8 items-center">
+        
+        {/* Left Side Accent Line */}
+        <div className="md:col-span-1 hidden md:flex flex-col items-center">
+          <div className="h-40 w-[0.5px] bg-gradient-to-b from-transparent via-[#a98d32]/40 to-transparent" />
+        </div>
+
+        {/* Main Content Side */}
+        <div className="md:col-span-11 space-y-12 text-left">
+          <motion.div 
+            initial={{ opacity: 0, x: 20 }}
+            whileInView={{ opacity: 1, x: 0 }}
+            transition={{ duration: 1.2 }}
+            className="space-y-6"
+          >
+            <span className="text-[#a98d32] text-[10px] tracking-[0.8em] uppercase font-bold block mb-4 border-l-2 border-[#a98d32] pl-4">
+              Surah Ar-Rum : 21
+            </span>
+            
+            <h2 className="text-[#fbf8f4] text-3xl md:text-5xl lg:text-6xl font-extralight italic leading-[1.3] tracking-tight">
+              "Dan di antara tanda-tanda kekuasaan-Nya ialah Dia menciptakan untukmu <span className="text-[#dbc677] not-italic font-normal">isteri-isteri dari jenismu sendiri</span>, supaya kamu merasa tenteram kepadanya."
+            </h2>
+          </motion.div>
+
+          {/* Bottom Prayer Section - Using your requested font style */}
+          <motion.div 
+            initial={{ opacity: 0 }}
+            whileInView={{ opacity: 1 }}
+            transition={{ duration: 1.5, delay: 0.8 }}
+            className="pt-10 border-t border-white/10"
+          >
+            <p className="text-white/50 text-[13px] md:text-xs tracking-[0.3em] uppercase leading-loose font-light">
+              Semoga ikatan ini diberkati Allah SWT <br className="hidden md:block" /> 
+              dan kekal hingga ke Jannah.
+            </p>
+          </motion.div>
+        </div>
+      </div>
+
+      {/* Texture Overlay */}
+      <div className="absolute inset-0 opacity-[0.03] pointer-events-none mix-blend-overlay bg-[url('https://www.transparenttextures.com/patterns/black-paper.png')]" />
     </section>
   );
 }
