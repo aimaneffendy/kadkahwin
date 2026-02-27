@@ -1,8 +1,7 @@
 'use client';
 import { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-// Aku tambah ikon Compass untuk vibe Google Maps yang lebih kacak
-import { Navigation, Play, X, Copy, Check, Compass, MapPin } from 'lucide-react';
+import { Navigation, Play, X, Copy, Check, Compass } from 'lucide-react';
 
 export default function LocationSection() {
   const [showVideo, setShowVideo] = useState(false);
@@ -17,48 +16,69 @@ export default function LocationSection() {
   };
 
   return (
-    <section className="h-screen w-full relative bg-[#050505] overflow-hidden flex flex-col font-serif">
+    /* FIX: Buang padding dari section untuk elakkan gap hitam */
+    <section className="min-h-screen w-full relative bg-black overflow-hidden flex flex-col font-serif">
       
-      {/* 1. BACKGROUND IMAGE */}
-      <div className="absolute inset-0 w-full h-full opacity-40">
+      {/* 1. BACKGROUND IMAGE - ANIMATED FADE IN (DARI GELAP) 
+          Setiap kali user lalu (once: false), dia akan fade in slow-slow
+      */}
+      <div className="absolute inset-0 w-full h-full z-0 overflow-hidden bg-black">
         <motion.img 
-          initial={{ scale: 1.1 }}
-          whileInView={{ scale: 1 }}
-          transition={{ duration: 12, ease: "easeOut" }}
           src="/dewan.webp" 
           className="w-full h-full object-cover"
           alt="The Venue"
+          initial={{ opacity: 0 }}
+          whileInView={{ opacity: 0.4 }}
+          viewport={{ once: false, amount: 0.1 }}
+          transition={{ duration: 3, ease: "easeInOut" }}
         />
-        <div className="absolute inset-0 bg-gradient-to-b from-black via-transparent to-black" />
+        {/* Gradient diperkuatkan untuk seamless transition dengan section atas & bawah */}
+        <div className="absolute inset-0 bg-gradient-to-b from-black via-transparent to-black z-10" />
       </div>
 
-      <div className="relative z-10 flex flex-col h-full px-10 pt-24 pb-16">
+      {/* 2. MAIN CONTENT WRAPPER - Letak py-32 di sini untuk ruang premium */}
+      <div className="relative z-10 flex flex-col px-10 h-full max-w-4xl mx-auto w-full py-32 flex-1 justify-center">
         
         {/* TOP: EDITORIAL HEADER */}
-        <motion.div
-          initial={{ opacity: 0, x: -30 }}
-          whileInView={{ opacity: 1, x: 0 }}
-          transition={{ duration: 1 }}
-          className="mb-auto"
+        <motion.div 
+          initial={{ opacity: 0, y: 30 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: false, amount: 0.3 }}
+          transition={{ duration: 1, ease: "easeOut" }}
+          className="mb-16"
         >
           <div className="flex items-center gap-3 mb-6">
-            <span className="h-[1px] w-10 bg-[#a98d32]" />
+            <motion.span 
+              initial={{ width: 0 }}
+              whileInView={{ width: 40 }}
+              viewport={{ once: false }}
+              transition={{ duration: 0.8, delay: 0.3 }}
+              className="h-[1px] bg-[#a98d32]" 
+            />
             <p className="text-[#a98d32] text-[9px] tracking-[0.6em] uppercase font-bold">Lokasi Majlis</p>
           </div>
           <h2 className="text-[#dbc677] text-6xl md:text-8xl font-light leading-[0.85] tracking-tighter uppercase">
             Rich <br />
-            <span className="italic font-extralight lowercase opacity-80 text-white">Asians</span> <br />
+            <motion.span 
+              initial={{ opacity: 0 }}
+              whileInView={{ opacity: 0.8 }}
+              viewport={{ once: false }}
+              transition={{ duration: 1, delay: 0.5 }}
+              className="italic font-extralight lowercase text-white"
+            >
+              Asians
+            </motion.span> <br />
             Hall.
           </h2>
         </motion.div>
 
-        {/* MIDDLE: INFO SECTION (Fixed Masa & Tarikh Alignment) */}
-        <div className="space-y-12 mb-12">
-          
+        {/* MIDDLE: INFO SECTION */}
+        <div className="space-y-12 mb-16">
           <motion.div 
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.3 }}
+            viewport={{ once: false }}
+            transition={{ duration: 0.8, delay: 0.4 }}
             className="pt-4"
           >
             <div className="grid grid-cols-2 gap-4 w-full">
@@ -80,7 +100,8 @@ export default function LocationSection() {
           <motion.div 
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.4 }}
+            viewport={{ once: false }}
+            transition={{ duration: 0.8, delay: 0.6 }}
             className="flex flex-col gap-6"
           >
             <div className="max-w-[320px]">
@@ -110,17 +131,17 @@ export default function LocationSection() {
           </motion.div>
         </div>
 
-        {/* BOTTOM: NAVIGATION BUTTONS (FIXED GOOGLE MAPS LOOK) */}
+        {/* BOTTOM: NAVIGATION BUTTONS */}
         <motion.div 
           initial={{ opacity: 0, y: 20 }}
           whileInView={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.5 }}
+          viewport={{ once: false }}
+          transition={{ duration: 0.8, delay: 0.8 }}
           className="grid grid-cols-2 gap-4"
         >
-          {/* WAZE - Minimalist Outline */}
           <a 
-            href="https://waze.com" target="_blank"
-            className="group h-14 border border-[#a98d32]/40 flex items-center justify-center transition-all hover:bg-[#a98d32]/5 active:scale-95"
+            href="https://waze.com/ul?q=Rich%20Asians%20Hall%20Ecohill" target="_blank"
+            className="group h-14 border border-[#a98d32]/40 flex items-center justify-center transition-all hover:bg-[#a98d32]/5"
           >
             <div className="flex items-center gap-3">
               <span className="text-[#dbc677] text-[10px] font-bold tracking-[0.4em] uppercase">Waze</span>
@@ -128,21 +149,19 @@ export default function LocationSection() {
             </div>
           </a>
 
-          {/* GOOGLE MAPS - New Premium Look */}
           <a 
-            href="https://maps.google.com" target="_blank"
-            className="group h-14 bg-[#dbc677] flex items-center justify-center shadow-2xl active:scale-95 transition-all hover:bg-[#ebd996]"
+            href="https://www.google.com/maps/search/?api=1&query=Rich+Asians+Hall+Ecohill" target="_blank"
+            className="group h-14 bg-[#dbc677] flex items-center justify-center shadow-2xl transition-all hover:bg-[#ebd996]"
           >
             <div className="flex items-center gap-3">
               <span className="text-black text-[10px] font-bold tracking-[0.4em] uppercase">Maps</span>
-              {/* Pakai Compass ikon untuk vibe lebih premium & clean */}
-              <Compass size={14} className="text-black animate-pulse-slow" />
+              <Compass size={14} className="text-black" />
             </div>
           </a>
         </motion.div>
       </div>
 
-      {/* VIDEO POPUP & TEXTURE (Maintain as before) */}
+      {/* POPUP VIDEO */}
       <AnimatePresence>
         {showVideo && (
           <motion.div 
@@ -152,12 +171,13 @@ export default function LocationSection() {
             <button onClick={() => setShowVideo(false)} className="absolute top-8 right-8 text-white/40 hover:text-white transition-colors">
               <X size={28} />
             </button>
-            <motion.div initial={{ scale: 0.95 }} animate={{ scale: 1 }} className="w-full max-w-4xl aspect-video border border-[#a98d32]/30 bg-black shadow-2xl overflow-hidden">
+            <motion.div initial={{ scale: 0.95 }} animate={{ scale: 1 }} exit={{ scale: 0.95 }} className="w-full max-w-4xl aspect-video border border-[#a98d32]/30 bg-black shadow-2xl overflow-hidden">
               <iframe className="w-full h-full" src="https://www.youtube.com/embed/dQw4w9WgXcQ" frameBorder="0" allowFullScreen />
             </motion.div>
           </motion.div>
         )}
       </AnimatePresence>
+
       <div className="absolute inset-0 opacity-[0.03] pointer-events-none mix-blend-overlay bg-[url('https://www.transparenttextures.com/patterns/black-paper.png')]" />
     </section>
   );

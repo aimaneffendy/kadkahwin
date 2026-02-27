@@ -4,24 +4,26 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { Edit3, X, Send, Heart, ChevronLeft, ChevronRight } from 'lucide-react';
 import { supabase } from '@/lib/supabase'; 
 
-// Komponen untuk satu hati terapung
+// 1. KOMPONEN HATI TERAPUNG
 const FloatingHeart = ({ delay, duration, x, y, scale }: { delay: number; duration: number; x: number; y: number; scale: number }) => (
   <motion.div
-    className="absolute text-[#dbc677] opacity-0"
-    initial={{ opacity: 0, x: `${x}vw`, y: `${y}vh`, scale: 0 }}
+    className="absolute text-[#dbc677] pointer-events-none"
+    style={{ left: `${x}vw`, zIndex: 5 }}
+    initial={{ opacity: 0, y: `${y}vh`, scale: 0 }}
     animate={{ 
-      opacity: [0, 0.4, 0], // Muncul perlahan dan hilang
-      y: [`${y}vh`, `${y - 20}vh`], // Terapung ke atas
-      scale: [0, scale, scale * 0.8] 
+      opacity: [0, 0.4, 0.4, 0], 
+      y: [`${y}vh`, `${y - 80}vh`], 
+      scale: [0, scale, scale, 0] 
     }}
     transition={{ 
       duration: duration, 
       delay: delay, 
-      repeat: Infinity, // Ulang selama-lamanya
-      ease: "easeInOut" 
+      repeat: Infinity, 
+      ease: "linear",
+      times: [0, 0.05, 0.8, 1]
     }}
   >
-    <Heart size={20} fill="#dbc677" /> {/* Hati dengan warna gold fill */}
+    <Heart size={20} fill="#dbc677" />
   </motion.div>
 );
 
@@ -36,15 +38,14 @@ export default function WishSection() {
   const [mesej, setMesej] = useState(''); 
   const [isSending, setIsSending] = useState(false);
 
-  // Generate data rawak untuk hati terapung (gunakan useMemo supaya tak generate setiap kali render)
   const floatingHeartsData = useMemo(() => {
-    return Array.from({ length: 15 }).map((_, i) => ({
+    return Array.from({ length: 20 }).map((_, i) => ({
       id: i,
-      delay: Math.random() * 10, // Delay rawak 0-10s
-      duration: 10 + Math.random() * 10, // Durasi 10-20s
-      x: Math.random() * 100, // Posisi x rawak (0-100vw)
-      y: 100 + Math.random() * 20, // Posisi y permulaan rawak (bawah skrin)
-      scale: 0.5 + Math.random() * 0.5 // Skala rawak
+      delay: Math.random() * 10,
+      duration: 6 + Math.random() * 6,
+      x: Math.random() * 95,
+      y: 110,
+      scale: 0.4 + Math.random() * 0.4 
     }));
   }, []);
 
@@ -86,116 +87,116 @@ export default function WishSection() {
     setIsSending(false);
   };
 
-  if (isLoading) return <div className="h-screen w-full bg-[#050505] flex items-center justify-center text-[#a98d32] tracking-[0.5em] uppercase text-[10px]">Loading Registry...</div>;
+  if (isLoading) return <div className="h-screen w-full bg-black flex items-center justify-center text-[#dbc677] tracking-[0.5em] uppercase text-[10px]">Loading Registry...</div>;
 
   return (
-    <section className="min-h-screen w-full relative bg-[#050505] overflow-hidden flex flex-col font-serif py-20 px-10">
+    /* FIX: Buang py-24 px-6 dari sini untuk tutup gap */
+    <section className="min-h-screen w-full relative bg-black overflow-hidden flex flex-col font-serif">
       
-      {/* 1. BACKGROUND IMAGE - Focus Right to show Gold Design */}
-      <div className="absolute inset-0 w-full h-full z-0">
-        <motion.img 
-          initial={{ opacity: 0, scale: 1.05 }}
-          whileInView={{ opacity: 0.5, scale: 1 }}
-          transition={{ duration: 2.5, ease: "easeOut" }}
+      {/* BACKGROUND IMAGE - FULL BLEED */}
+      <div className="absolute inset-0 w-full h-full z-0 pointer-events-none">
+        <img 
           src="/backgroundmain3.webp" 
-          className="w-full h-full object-cover object-right grayscale-0"
+          className="w-full h-full object-cover object-right opacity-40"
           alt="Wish Background"
         />
-        <div className="absolute inset-0 bg-gradient-to-r from-black via-black/60 to-transparent" />
+        {/* FIX: Gradient diperkemas untuk blend dengan section RSVP (atas) */}
+        <div className="absolute inset-0 bg-gradient-to-b from-black via-black/20 to-black" />
       </div>
 
-      {/* 2. FLOATING GOLD HEARTS - Layered behind content */}
-      <div className="absolute inset-0 z-5 pointer-events-none overflow-hidden">
+      {/* LOVE TERAPUNG */}
+      <div className="absolute inset-0 z-[5] pointer-events-none overflow-hidden">
         {floatingHeartsData.map(heart => (
           <FloatingHeart key={heart.id} {...heart} />
         ))}
       </div>
 
-      {/* 3. MAIN CONTAINER */}
-      <div className="relative z-10 max-w-4xl mx-auto w-full flex flex-col h-full">
+      {/* CONTENT WRAPPER - Letak padding kat sini (py-32 px-10) */}
+      <div className="relative z-10 max-w-4xl mx-auto w-full flex flex-col h-full py-32 px-10">
         
-        {/* HEADER */}
+        {/* HEADER TITLE */}
         <motion.div
           initial={{ opacity: 0, y: 30 }}
           whileInView={{ opacity: 1, y: 0 }}
-          transition={{ duration: 1 }}
+          viewport={{ once: false, amount: 0.3 }}
+          transition={{ duration: 1, ease: "easeOut" }}
           className="mb-14"
         >
           <div className="flex items-center gap-3 mb-4">
-            <span className="h-[1px] w-10 bg-[#a98d32]" />
+            <motion.span 
+              initial={{ width: 0 }}
+              whileInView={{ width: 40 }}
+              viewport={{ once: false }}
+              transition={{ duration: 0.8, delay: 0.3 }}
+              className="h-[1px] bg-[#a98d32]" 
+            />
             <p className="text-[#a98d32] text-[9px] tracking-[0.6em] uppercase font-bold">Tinta Kasih</p>
           </div>
           <h2 className="text-[#dbc677] text-6xl md:text-8xl font-light leading-[0.85] tracking-tighter uppercase">
             Bingkisan <br />
-            <span className="italic font-extralight lowercase opacity-80 text-white">Ucapan.</span>
+            <motion.span 
+              initial={{ opacity: 0 }}
+              whileInView={{ opacity: 0.8 }}
+              viewport={{ once: false }}
+              transition={{ duration: 1, delay: 0.5 }}
+              className="italic font-extralight lowercase text-white"
+            >
+              ucapan.
+            </motion.span>
           </h2>
         </motion.div>
 
         {/* CAROUSEL CONTENT */}
-        <div className="flex flex-col items-center justify-center flex-1">
-          {/* Card Height Adjusted to 380px */}
-          <div className="relative w-full max-w-sm flex items-center justify-center h-[380px]">
+        <motion.div 
+          initial={{ opacity: 0, scale: 0.95 }}
+          whileInView={{ opacity: 1, scale: 1 }}
+          viewport={{ once: false, amount: 0.2 }}
+          transition={{ duration: 0.8, delay: 0.2 }}
+          className="flex flex-col items-center justify-center flex-1"
+        >
+          <div className="relative w-full max-w-sm flex items-center justify-center h-[400px]">
             {wishes.length > 0 ? (
-              <AnimatePresence initial={false}>
+              <AnimatePresence initial={false} mode="wait">
                 {wishes.map((wish, i) => {
-                  const isCenter = i === index;
-                  const isLeft = i === index - 1;
-                  const isRight = i === index + 1;
-
-                  if (!isCenter && !isLeft && !isRight) return null;
-
+                  if (i !== index) return null;
                   return (
                     <motion.div
                       key={wish.id}
                       drag="x"
                       dragConstraints={{ left: 0, right: 0 }}
                       onDragEnd={onDragEnd}
-                      initial={{ opacity: 0, scale: 0.8 }}
-                      animate={{
-                        opacity: isCenter ? 1 : 0,
-                        scale: isCenter ? 1 : 0.8,
-                        x: isCenter ? 0 : isLeft ? -300 : 300,
-                        rotate: isCenter ? 0 : isLeft ? -10 : 10,
-                        zIndex: isCenter ? 30 : 10,
-                      }}
-                      transition={{ type: "spring", stiffness: 200, damping: 25 }}
+                      initial={{ opacity: 0, x: 20 }}
+                      animate={{ opacity: 1, x: 0 }}
+                      exit={{ opacity: 0, x: -20 }}
                       className="absolute w-full max-w-[320px] h-full bg-white/[0.03] backdrop-blur-xl border border-white/10 p-10 rounded-sm shadow-2xl flex flex-col justify-between cursor-grab active:cursor-grabbing touch-none"
                     >
-                      <div className="space-y-4 text-left relative overflow-hidden">
+                      <div className="space-y-4 text-left">
                         <Heart size={14} className="text-[#a98d32]/60" />
-                        <p className="text-white/90 text-[16px] md:text-[18px] leading-[1.5] italic font-serif line-clamp-[6] break-words">
+                        <p className="text-white/90 text-[16px] md:text-[18px] leading-[1.5] italic font-serif line-clamp-[7] break-words">
                           "{wish.mesej}" 
                         </p>
                         
-                        {wish.mesej.length > 80 && (
-                          <button 
-                            onClick={() => setSelectedWish(wish)}
-                            className="text-[#dbc677] text-[10px] tracking-[0.2em] uppercase font-bold border-b border-[#dbc677]/30 pb-0.5 inline-block"
-                          >
+                        {wish.mesej.length > 120 && (
+                          <button onClick={() => setSelectedWish(wish)} className="text-[#dbc677] text-[10px] tracking-[0.2em] uppercase font-bold border-b border-[#dbc677]/30 pb-0.5 inline-block">
                             Baca Penuh
                           </button>
                         )}
                       </div>
 
                       <div className="border-t border-white/10 pt-6">
-                        <p className="text-[#dbc677] text-[13px] md:text-[14px] font-black tracking-[0.5em] uppercase leading-tight">
-                          {wish.nama}
-                        </p>
-                        <p className="text-white/30 text-[9px] tracking-[0.3em] uppercase mt-2 font-medium">
-                          Tetamu Undangan
-                        </p>
+                        <p className="text-[#dbc677] text-[13px] md:text-[14px] font-black tracking-[0.5em] uppercase leading-tight line-clamp-1">{wish.nama}</p>
+                        <p className="text-white/30 text-[9px] tracking-[0.3em] uppercase mt-2 font-medium">Tetamu Undangan</p>
                       </div>
                     </motion.div>
                   );
                 })}
               </AnimatePresence>
             ) : (
-              <p className="text-white/20 text-[10px] tracking-widest uppercase italic">Empty Registry...</p>
+              <p className="text-white/20 text-[10px] tracking-widest uppercase italic text-center">Belum ada ucapan...</p>
             )}
           </div>
 
-          {/* Navigation Controls - Margin Reduced to mt-2 for closer proximity */}
-          <div className="flex flex-col items-center gap-4 mt-2">
+          <div className="flex flex-col items-center gap-4 mt-8">
             <div className="flex items-center gap-8">
               <button onClick={prevStep} className="p-2 text-[#a98d32]/40 hover:text-[#a98d32] transition-colors">
                 <ChevronLeft size={18} />
@@ -208,10 +209,16 @@ export default function WishSection() {
               </button>
             </div>
           </div>
-        </div>
+        </motion.div>
 
-        {/* Floating Action Button */}
-        <div className="mt-8 flex justify-center">
+        {/* BUTTON TITIP UCAPAN */}
+        <motion.div 
+          initial={{ opacity: 0, y: 20 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: false }}
+          transition={{ duration: 0.6, delay: 0.4 }}
+          className="mt-12 flex justify-center pb-12"
+        >
           <button 
             onClick={() => setIsFormOpen(true)} 
             className="flex items-center gap-4 px-12 py-4 bg-[#dbc677] hover:bg-[#a98d32] transition-all shadow-2xl active:scale-[0.98]"
@@ -219,28 +226,18 @@ export default function WishSection() {
             <Edit3 size={14} className="text-black" />
             <span className="text-black text-[11px] font-black tracking-[0.3em] uppercase">Titipkan Ucapan</span>
           </button>
-        </div>
+        </motion.div>
       </div>
 
-      {/* MODAL POPUP: BACA FULL UCAPAN */}
+      {/* MODAL POPUP & FORM */}
       <AnimatePresence>
         {selectedWish && (
-          <motion.div 
-            initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
-            className="fixed inset-0 z-[150] bg-black/95 backdrop-blur-md flex items-center justify-center px-8"
-          >
-            <motion.div 
-              initial={{ scale: 0.9, y: 20 }} animate={{ scale: 1, y: 0 }} exit={{ scale: 0.9, y: 20 }}
-              className="w-full max-w-lg bg-[#0f0f0f] border border-[#a98d32]/30 p-10 rounded-sm relative"
-            >
-              <button onClick={() => setSelectedWish(null)} className="absolute top-6 right-6 text-white/30 hover:text-white">
-                <X size={24} />
-              </button>
+          <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="fixed inset-0 z-[150] bg-black/95 backdrop-blur-md flex items-center justify-center px-8">
+            <motion.div initial={{ scale: 0.9, y: 20 }} animate={{ scale: 1, y: 0 }} exit={{ scale: 0.9, y: 20 }} className="w-full max-w-lg bg-[#0f0f0f] border border-[#a98d32]/30 p-10 rounded-sm relative">
+              <button onClick={() => setSelectedWish(null)} className="absolute top-6 right-6 text-white/30 hover:text-white"><X size={24} /></button>
               <Heart size={20} className="text-[#a98d32]/40 mb-6" />
               <div className="max-h-[50vh] overflow-y-auto pr-4 custom-scrollbar">
-                <p className="text-white/90 font-serif text-xl md:text-2xl leading-relaxed italic break-words italic">
-                  "{selectedWish.mesej}"
-                </p>
+                <p className="text-white/90 font-serif text-xl md:text-2xl leading-relaxed italic break-words">"{selectedWish.mesej}"</p>
               </div>
               <div className="border-t border-[#a98d32]/10 mt-8 pt-6">
                 <p className="text-[#dbc677] text-[15px] font-black tracking-[0.5em] uppercase">{selectedWish.nama}</p>
@@ -251,20 +248,11 @@ export default function WishSection() {
         )}
       </AnimatePresence>
 
-      {/* MODAL: TULIS UCAPAN */}
       <AnimatePresence>
         {isFormOpen && (
-          <motion.div 
-            initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
-            className="fixed inset-0 z-[110] bg-black/98 backdrop-blur-xl flex items-center justify-center px-8"
-          >
-            <motion.div 
-              initial={{ scale: 0.95, y: 30 }} animate={{ scale: 1, y: 0 }} exit={{ scale: 0.95, y: 30 }}
-              className="w-full max-w-md bg-[#0f0f0f] border border-[#a98d32]/20 p-12 rounded-sm relative"
-            >
-              <button onClick={() => setIsFormOpen(false)} className="absolute top-8 right-8 text-white/30 hover:text-white">
-                <X size={24} />
-              </button>
+          <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="fixed inset-0 z-[110] bg-black/98 backdrop-blur-xl flex items-center justify-center px-8">
+            <motion.div initial={{ scale: 0.95, y: 30 }} animate={{ scale: 1, y: 0 }} exit={{ scale: 0.95, y: 30 }} className="w-full max-w-md bg-[#0f0f0f] border border-[#a98d32]/20 p-8 md:p-12 rounded-sm relative">
+              <button onClick={() => setIsFormOpen(false)} className="absolute top-8 right-8 text-white/30 hover:text-white"><X size={24} /></button>
               <div className="mb-12">
                 <p className="text-[#a98d32] text-[9px] tracking-[0.4em] uppercase font-bold mb-2">Message</p>
                 <h3 className="text-[#dbc677] font-serif text-5xl leading-none uppercase tracking-tighter">Bingkisan <br/><span className="italic font-light lowercase text-white/90">ucapan.</span></h3>

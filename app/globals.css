@@ -1,91 +1,66 @@
 @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;1,400&display=swap');
 @import "tailwindcss";
 
-@font-face {
-  font-family: 'Signatie';
-  src: url('/fonts/Signatie.otf') format('opentype');
-  font-weight: normal;
-  font-style: normal;
-  font-display: swap;
-}
-
 @theme {
   --font-serif: 'Playfair Display', serif;
-  --font-script: 'Signatie', 'Great Vibes', cursive;
+  --font-montserrat: var(--font-montserrat);
+  --font-script: var(--font-script);
   --color-gold-primary: #d4af37;
 }
 
 @layer base {
+  html {
+    scroll-smooth: auto; /* Smoother scrolling */
+  }
+  
   body {
     background-color: #000;
     color: #d4af37;
     font-family: 'Playfair Display', serif;
-    -webkit-font-smoothing: antialiased;
-    /* Prevent horizontal scroll on mobile */
     overflow-x: hidden;
   }
 
-  /* GLOBAL MOBILE FIX: Paksa semua section h-screen jadi flexible */
-  @media (max-width: 768px) {
-    section.h-screen {
-      height: auto !important;
-      min-height: 100vh !important;
-      min-height: -webkit-fill-available !important; /* Fix untuk Safari iOS */
-      padding-top: 4rem !important;
-      padding-bottom: 4rem !important;
-    }
+  /* UTAMA: Semua section akan jadi continuous scroll */
+  section {
+    position: relative;
+    width: 100%;
+    min-height: auto; /* Benarkan section memanjang ikut content */
+    padding: 80px 24px; /* Padding atas bawah yang konsisten */
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+  }
 
-    /* Kecilkan imej pengantin/logo secara automatik kat phone */
-    img {
-      max-width: 90% !important;
-      height: auto !important;
-    }
+  /* Cuma page pertama (Hero) yang kita nak paksa penuh skrin */
+  section#hero {
+    height: 100vh;
+    height: 100dvh; /* Dynamic viewport untuk mobile */
+    padding: 0;
   }
 }
 
 @layer components {
-  .font-signatie {
-    font-family: var(--font-script);
-  }
-
-  .input-premium {
-    width: 100%;
-    background: transparent;
-    border-bottom: 1px solid rgba(212, 175, 55, 0.2);
-    padding: 1rem 0;
-    outline: none;
-    transition: all 0.5s;
-    font-family: 'Playfair Display', serif;
-    font-size: 14px;
-    letter-spacing: 0.1em;
-    color: #d4af37;
-  }
-
-  .input-premium::placeholder {
-    color: rgba(212, 175, 55, 0.4);
-    font-style: italic;
-  }
-
   .btn-gold {
     border: 1px solid #d4af37;
     color: #d4af37;
     text-transform: uppercase;
     letter-spacing: 0.3em;
     font-size: 11px;
-    padding: 1rem 2rem;
-    transition: all 0.5s;
-    cursor: pointer;
+    padding: 14px 32px;
     background: transparent;
-    text-align: center;
+    transition: all 0.4s ease;
+    border-radius: 999px;
   }
 
   .btn-gold:hover {
     background: #d4af37;
     color: #000;
   }
+}
 
-  /* Utiliti tambahan untuk spacing mobile yang kemas */
-  .mobile-container {
-    @apply px-6 py-10 md:px-20 md:py-20 flex flex-col items-center justify-center;
-  }
+section {
+  height: auto !important; /* Benarkan section memanjang ikut content */
+  min-height: auto !important;
+  overflow: visible !important; /* Benarkan content melimpah ke bawah secara natural */
 }

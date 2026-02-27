@@ -5,29 +5,15 @@ import { ChevronDown } from 'lucide-react';
 export default function HeroSection({ isOpen }: { isOpen: boolean }) {
   const premiumShadow = { filter: 'drop-shadow(0 2px 4px rgba(0,0,0,0.8))' };
   
-  // Varian gabungan Fade In + Zoom Out (Trigger setiap kali masuk skrin)
   const fadeZoomVariants = (delay: number) => ({
-    initial: { 
-      opacity: 0, 
-      scale: 1.15 // Mula besar sikit (Zoomed In)
-    },
-    whileInView: { 
-      opacity: 1, 
-      scale: 1 // Kembali ke saiz asal (Zoom Out)
-    },
-    viewport: { 
-      once: false, // Re-trigger setiap kali user skrol balik ke sini
-      amount: 0.3 
-    },
-    transition: { 
-      duration: 1.2, 
-      delay, 
-      ease: [0.22, 1, 0.36, 1] as any 
-    }
+    initial: { opacity: 0, scale: 1.15 },
+    whileInView: { opacity: 1, scale: 1 },
+    viewport: { once: false, amount: 0.3 },
+    transition: { duration: 1.2, delay, ease: [0.22, 1, 0.36, 1] as any }
   });
 
   return (
-    <section className="relative h-screen w-full flex flex-col items-center justify-center text-center px-6 overflow-hidden bg-black font-serif">
+    <section className="relative h-screen h-[100dvh] w-full flex flex-col items-center justify-center text-center px-6 overflow-hidden bg-black font-serif">
       
       {/* Background Layer */}
       <div className="absolute inset-0 z-0">
@@ -36,12 +22,13 @@ export default function HeroSection({ isOpen }: { isOpen: boolean }) {
           style={{ 
             backgroundImage: "url('/backgroundmain2.png')",
             backgroundSize: 'cover', 
-            backgroundPosition: 'left center', 
+            backgroundPosition: 'center 40%', 
             filter: 'brightness(0.55)', 
             transform: 'scale(1.1)', 
           }}
         />
-        <div className="absolute inset-0 bg-black/50" />
+        {/* Gradient diperkukuh: Atas (gelap sikit), Bawah (hitam pekat) */}
+        <div className="absolute inset-0 bg-gradient-to-b from-black/40 via-transparent to-black z-10" />
       </div>
 
       {/* Sparkles Atmosphere */}
@@ -73,9 +60,7 @@ export default function HeroSection({ isOpen }: { isOpen: boolean }) {
       </div>
 
       {/* Content Typography */}
-      <div className="z-20 flex flex-col items-center justify-center h-full pt-10 pb-20 space-y-8 md:space-y-12">
-        
-        {/* 1. WALIMATULURUS */}
+      <div className="z-20 flex flex-col items-center justify-center h-full pt-10 pb-20 space-y-8 md:space-y-12 w-full">
         <motion.p 
           {...fadeZoomVariants(0.3)} 
           className="text-[10px] md:text-xs uppercase tracking-[0.5em] text-[#a98d32] font-bold" 
@@ -84,33 +69,23 @@ export default function HeroSection({ isOpen }: { isOpen: boolean }) {
           Meraikan Cinta
         </motion.p>
 
-        {/* 2. NAMA PENGANTIN */}
         <motion.div
           initial={{ opacity: 0, scale: 1.05 }}
-          whileInView={isOpen ? { 
-            opacity: 1, 
-            scale: [1, 1.03, 1] 
-          } : {}}
+          whileInView={isOpen ? { opacity: 1, scale: [1, 1.03, 1] } : {}}
           viewport={{ once: false, amount: 0.3 }}
           transition={{ 
             opacity: { delay: 0.6, duration: 1.5 },
-            scale: { 
-              delay: 0.6, 
-              duration: 4, 
-              repeat: Infinity, 
-              ease: "easeInOut" 
-            }
+            scale: { delay: 0.6, duration: 4, repeat: Infinity, ease: "easeInOut" }
           }}
-          className="px-4"
+          className="w-full flex justify-center px-4"
         >
           <img 
             src="/nama-pengantin.png" 
             alt="Aiman & Adinda" 
-            className="w-[85vw] md:w-[550px] h-auto object-contain drop-shadow-[0_15px_30px_rgba(0,0,0,1)]" 
+            className="w-[85vw] max-w-[550px] h-auto object-contain drop-shadow-[0_15px_30px_rgba(0,0,0,1)]" 
           />
         </motion.div>
 
-        {/* 3. TARIKH */}
         <motion.div 
           {...fadeZoomVariants(0.9)}
           className="flex items-center justify-center gap-6 md:gap-10 text-3xl md:text-5xl font-light tracking-[0.25em] text-[#dbc677]" 
@@ -123,33 +98,30 @@ export default function HeroSection({ isOpen }: { isOpen: boolean }) {
           <span>26</span>
         </motion.div>
 
-        {/* 4. LOKASI */}
         <motion.div 
           {...fadeZoomVariants(1.2)}
-          className="space-y-2 tracking-[0.3em] uppercase" 
+          className="space-y-2 tracking-[0.3em] uppercase px-4" 
           style={premiumShadow}
         >
           <p className="text-[12px] md:text-sm font-bold text-[#a98d32]">Rich Asians Hall,</p>
           <p className="text-[10px] md:text-xs opacity-95 italic text-[#dbc677]">Dataran Ecohill, Setia Ecohill</p>
         </motion.div>
 
-        {/* 5. AYAT JEMPUTAN SKROL */}
         <motion.p 
           {...fadeZoomVariants(1.5)}
-          className="text-[11px] italic max-w-[280px] mx-auto leading-relaxed text-[#dbc677] font-medium" 
+          className="text-[11px] italic max-w-[280px] mx-auto leading-relaxed text-[#dbc677] font-medium px-4" 
           style={premiumShadow}
         >
           Sila telusuri warkah ini untuk butiran lanjut.
         </motion.p>
       </div>
 
-      {/* 6. SCROLL ICON */}
       <motion.div 
         initial={{ opacity: 0 }}
         whileInView={isOpen ? { opacity: 0.4, y: [0, 8, 0] } : {}}
         viewport={{ once: false }}
         transition={{ delay: 1.8, duration: 2.5, repeat: Infinity }}
-        className="absolute bottom-8 text-[#dbc677]"
+        className="absolute bottom-10 md:bottom-8 text-[#dbc677] z-30"
       >
         <ChevronDown size={22} strokeWidth={1} />
       </motion.div>

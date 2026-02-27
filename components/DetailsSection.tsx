@@ -2,34 +2,38 @@
 import { motion } from 'framer-motion';
 
 export default function DetailsSection() {
-  // Animasi container untuk kesan staggered (muncul satu-satu)
+  // Animasi container untuk kesan staggered
   const containerVariants = {
     hidden: { opacity: 0 },
     visible: {
       opacity: 1,
       transition: {
-        staggerChildren: 0.2, // Jeda 0.2s antara setiap element
+        staggerChildren: 0.2,
         delayChildren: 0.3,
       },
     },
   };
 
- const itemVariants = {
-  hidden: { opacity: 0, y: 20 },
-  visible: { 
-    opacity: 1, 
-    y: 0, 
-    transition: { 
-      duration: 0.8, 
-      ease: [0.22, 1, 0.36, 1] as any // TAMBAH 'as any' KAT SINI
-    } 
-  }
-};
+  const itemVariants = {
+    hidden: { opacity: 0, y: 20 },
+    visible: { 
+      opacity: 1, 
+      y: 0, 
+      transition: { 
+        duration: 0.8, 
+        ease: [0.22, 1, 0.36, 1] as any 
+      } 
+    }
+  };
 
   return (
-    <section className="snap-start h-screen w-full bg-[#050505] relative flex flex-col items-center justify-center px-6 overflow-hidden font-serif">
+    /* FIX: 
+       1. Buang py-24 dari sini (punca gap hitam).
+       2. Ganti bg-[#050505] kepada bg-black supaya warna base sama.
+    */
+    <section className="w-full min-h-screen bg-black relative flex flex-col items-center justify-center overflow-hidden font-serif">
       
-      {/* 1. BACKGROUND 2.WEBP - UPSIDE DOWN */}
+      {/* 1. BACKGROUND LAYER */}
       <div className="absolute inset-0 z-0">
         <motion.img 
           initial={{ opacity: 0 }}
@@ -39,16 +43,19 @@ export default function DetailsSection() {
           className="w-full h-full object-cover object-center scale-y-[-1]"
           alt="background"
         />
-        <div className="absolute inset-0 bg-gradient-to-b from-black/60 via-transparent to-black/60" />
+        <div className="absolute inset-0 bg-black/60" />
+        
+        {/* FIX: Gradient diperkuatkan supaya 'from-black' di atas & 'to-black' di bawah rapat */}
+        <div className="absolute inset-0 bg-gradient-to-b from-black via-transparent to-black" />
       </div>
 
-      {/* 2. MAIN CONTENT - WITH RE-TRIGGER ANIMATION */}
+      {/* 2. MAIN CONTENT WRAPPER - Letak py-32 di sini */}
       <motion.div 
         variants={containerVariants}
         initial="hidden"
         whileInView="visible"
-        viewport={{ once: false, amount: 0.3 }} // Akan trigger setiap kali 30% section masuk skrin
-        className="z-10 w-full max-w-2xl flex flex-col items-center text-center space-y-6 md:space-y-8"
+        viewport={{ once: false, amount: 0.2 }}
+        className="relative z-10 w-full max-w-2xl flex flex-col items-center text-center space-y-6 md:space-y-10 px-6 py-32"
       >
         
         {/* SALAM */}
@@ -56,7 +63,7 @@ export default function DetailsSection() {
           <h2 className="text-[#fbf8f4] text-4xl md:text-6xl font-normal opacity-90 leading-relaxed tracking-normal">
             السَّلاَمُ عَلَيْكُمْ
           </h2>
-          <div className="h-[1px] w-12 bg-[#a98d32]/30 mx-auto mt-2" />
+          <div className="h-[1px] w-12 bg-[#dbc677]/30 mx-auto mt-2" />
         </motion.div>
 
         {/* TUAN RUMAH */}
@@ -108,25 +115,26 @@ export default function DetailsSection() {
           
           <div className="absolute left-1/2 -translate-x-1/2 bottom-0 h-[0.5px] w-20 bg-gradient-to-r from-transparent via-[#a98d32]/40 to-transparent" />
         </motion.div>
-      </motion.div>
 
-      {/* 3. SCROLL HINT */}
-      <motion.div 
-        initial={{ opacity: 0 }}
-        whileInView={{ opacity: 1 }}
-        transition={{ delay: 2 }}
-        className="absolute bottom-8 flex flex-col items-center gap-2 pointer-events-none z-20"
-      >
-        <span className="text-[#a98d32]/50 text-[9px] tracking-[0.5em] uppercase font-light">Butiran Majlis</span>
-        <motion.div
-          animate={{ y: [0, 8, 0] }}
-          transition={{ duration: 2, repeat: Infinity, ease: "easeInOut" }}
-          className="text-[#a98d32]/50"
+        {/* 3. SCROLL HINT - Diletakkan di dalam wrapper content */}
+        <motion.div 
+          initial={{ opacity: 0 }}
+          whileInView={{ opacity: 1 }}
+          transition={{ delay: 1 }}
+          className="pt-10 flex flex-col items-center gap-2 pointer-events-none z-20"
         >
-          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1" strokeLinecap="round" strokeLinejoin="round">
-            <path d="M7 13l5 5 5-5M7 6l5 5 5-5" />
-          </svg>
+          <span className="text-[#a98d32]/50 text-[9px] tracking-[0.5em] uppercase font-light">Butiran Majlis</span>
+          <motion.div
+            animate={{ y: [0, 8, 0] }}
+            transition={{ duration: 2, repeat: Infinity, ease: "easeInOut" }}
+            className="text-[#a98d32]/50"
+          >
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1" strokeLinecap="round" strokeLinejoin="round">
+              <path d="M7 13l5 5 5-5M7 6l5 5 5-5" />
+            </svg>
+          </motion.div>
         </motion.div>
+
       </motion.div>
 
       {/* TEXTURE OVERLAYS */}

@@ -2,7 +2,6 @@
 import { motion } from 'framer-motion';
 import { useMemo } from 'react';
 
-// Komponen Partikel Emas (Golden Dust)
 const GoldenDust = ({ delay, duration, x, y, size }: { delay: number; duration: number; x: number; y: number; size: number }) => (
   <motion.div
     className="absolute rounded-full bg-[#dbc677] blur-[0.5px]"
@@ -30,9 +29,10 @@ export default function QuoteSection() {
   }, []);
 
   return (
-    <section className="snap-start h-screen w-full bg-[#050505] relative flex items-center justify-center overflow-hidden font-serif">
+    /* FIX: Buang padding vertical dari section supaya background bermula dari titik 0 */
+    <section className="w-full min-h-[70vh] bg-black relative flex items-center justify-center overflow-hidden font-serif">
       
-      {/* 1. BACKGROUND IMAGE - INVERTED (Focus Left) */}
+      {/* 1. BACKGROUND IMAGE */}
       <div className="absolute inset-0 z-0">
         <motion.img 
           initial={{ opacity: 0 }}
@@ -42,6 +42,7 @@ export default function QuoteSection() {
           className="w-full h-full object-cover object-left"
           alt="background"
         />
+        {/* Gradient Atas dipastikan 'from-black' untuk sambung HeroSection */}
         <div className="absolute inset-0 bg-gradient-to-b from-black via-transparent to-black" />
       </div>
 
@@ -50,8 +51,8 @@ export default function QuoteSection() {
         {dustParticles.map(p => <GoldenDust key={p.id} {...p} />)}
       </div>
 
-      {/* 3. VOGUE EDITORIAL CONTENT */}
-      <div className="relative z-10 max-w-5xl w-full px-10 md:px-20 grid grid-cols-1 md:grid-cols-12 gap-8 items-center">
+      {/* 3. CONTENT - Letak padding di sini (py-32) */}
+      <div className="relative z-10 max-w-5xl w-full px-10 md:px-20 grid grid-cols-1 md:grid-cols-12 gap-8 items-center py-32">
         
         {/* Left Side Accent Line */}
         <div className="md:col-span-1 hidden md:flex flex-col items-center">
@@ -75,7 +76,6 @@ export default function QuoteSection() {
             </h2>
           </motion.div>
 
-          {/* Bottom Prayer Section - Using your requested font style */}
           <motion.div 
             initial={{ opacity: 0 }}
             whileInView={{ opacity: 1 }}

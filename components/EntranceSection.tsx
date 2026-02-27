@@ -31,50 +31,40 @@ export default function EntranceSection({ onOpen }: EntranceSectionProps) {
 
   const handleOpen = () => {
     setIsTransitioning(true);
-    // 2 saat untuk loading animation yang tenang
     setTimeout(() => {
       onOpen();
     }, 2200);
   };
 
   return (
-    <section className="relative h-screen w-full flex flex-col items-center justify-center overflow-hidden bg-[#050505]">
+    /* TUKAR: Guna fixed inset-0 supaya ia kunci seluruh skrin tanpa mengira parent container */
+    <section className="fixed inset-0 z-[100] flex flex-col items-center justify-center overflow-hidden bg-[#050505]">
       
-      {/* ==========================================================
-          STYLISH GOLD LOADER LAYER
-      ========================================================== */}
       <AnimatePresence>
         {isTransitioning && (
           <motion.div 
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
-            className="absolute inset-0 z-[100] bg-black flex flex-col items-center justify-center"
+            className="absolute inset-0 z-[110] bg-black flex flex-col items-center justify-center"
           >
-            {/* Background Soft Glow */}
             <motion.div 
               animate={{ opacity: [0.2, 0.5, 0.2] }}
               transition={{ duration: 2, repeat: Infinity }}
               className="absolute w-40 h-40 bg-[#d4b054] rounded-full blur-[80px]"
             />
-
-            {/* Elegant Spinning Ring */}
             <div className="relative w-16 h-16">
-              {/* Outer Ring */}
               <motion.div 
                 animate={{ rotate: 360 }}
                 transition={{ duration: 1.5, repeat: Infinity, ease: "linear" }}
                 className="absolute inset-0 border-t-2 border-r-2 border-[#d4b054] rounded-full"
               />
-              {/* Inner Slow Ring */}
               <motion.div 
                 animate={{ rotate: -360 }}
                 transition={{ duration: 3, repeat: Infinity, ease: "linear" }}
                 className="absolute inset-2 border-b-2 border-l-2 border-[#a98d32]/30 rounded-full"
               />
             </div>
-
-            {/* Subtle Text */}
             <motion.p
               initial={{ opacity: 0, y: 10 }}
               animate={{ opacity: 1, y: 0 }}
@@ -87,7 +77,6 @@ export default function EntranceSection({ onOpen }: EntranceSectionProps) {
         )}
       </AnimatePresence>
 
-      {/* BACKGROUND AREA (Kekal asal) */}
       <motion.div 
         initial={{ scale: 1.1 }}
         animate={{ scale: 1 }}
@@ -97,13 +86,13 @@ export default function EntranceSection({ onOpen }: EntranceSectionProps) {
         <img 
           src="/background1.webp" 
           alt="Wedding Background" 
+          /* TUKAR: Tambah h-full w-full object-cover untuk pastikan gambar tutup semua ruang */
           className="w-full h-full object-cover opacity-80"
         />
         <div className="absolute inset-0 bg-black/40" />
       </motion.div>
 
-      {/* CONTENT AREA (Kekal asal) */}
-      <div className="z-10 w-full text-center flex flex-col items-center justify-center px-6 mt-6">
+      <div className="z-10 w-full text-center flex flex-col items-center justify-center px-6">
         <motion.p 
           initial={{ opacity: 0, y: 10 }}
           animate={{ opacity: 1, y: 0 }}
@@ -143,7 +132,6 @@ export default function EntranceSection({ onOpen }: EntranceSectionProps) {
           </p>
         </motion.div>
 
-        {/* COUNTDOWN */}
         <motion.div
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
@@ -163,7 +151,6 @@ export default function EntranceSection({ onOpen }: EntranceSectionProps) {
           ))}
         </motion.div>
 
-        {/* BUTTON */}
         <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 1.1 }}>
           <motion.button
             onClick={handleOpen}

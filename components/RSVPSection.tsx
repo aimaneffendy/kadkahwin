@@ -1,7 +1,7 @@
 'use client';
 import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Check, Loader2, Users } from 'lucide-react';
+import { Check, Loader2 } from 'lucide-react';
 import { supabase } from '@/lib/supabase'; 
 
 export default function RSVPSection() {
@@ -57,27 +57,31 @@ export default function RSVPSection() {
   };
 
   return (
-    <section className="min-h-screen w-full relative bg-[#050505] overflow-hidden flex flex-col font-serif py-20 px-10">
+    /* FIX: Buung py-20 px-10 dari sini. Gunakan bg-black. */
+    <section className="min-h-screen w-full relative bg-black overflow-hidden flex flex-col font-serif">
       
       {/* BACKGROUND IMAGE */}
-      <div className="absolute inset-0 w-full h-full">
+      <div className="absolute inset-0 w-full h-full z-0">
         <motion.img 
           initial={{ opacity: 0 }}
-          whileInView={{ opacity: 0.6 }}
+          whileInView={{ opacity: 0.4 }}
           transition={{ duration: 2.5 }}
           src="/background2.webp" 
           className="w-full h-full object-cover"
           alt="RSVP Background"
         />
-        <div className="absolute inset-0 bg-gradient-to-t from-transparent via-black/40 to-black/90" />
+        {/* FIX: Gradient dari HITAM PEKAT di atas ke TELUS di tengah untuk seamless transition */}
+        <div className="absolute inset-0 bg-gradient-to-b from-black via-transparent to-black" />
       </div>
 
-      <div className="relative z-10 max-w-4xl mx-auto w-full flex flex-col h-full">
+      {/* CONTENT WRAPPER - Letak padding di sini (py-32 px-10) */}
+      <div className="relative z-10 max-w-4xl mx-auto w-full flex flex-col h-full py-32 px-10">
         
         {/* HEADER */}
         <motion.div
           initial={{ opacity: 0, y: 30 }}
           whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: false }}
           transition={{ duration: 1 }}
           className="mb-10"
         >
@@ -92,7 +96,6 @@ export default function RSVPSection() {
           
           {/* COMBINED LIVE GUEST CARD */}
           <div className="mt-8 overflow-hidden bg-black/40 border border-[#a98d32]/20 w-fit min-w-[240px] rounded-xl backdrop-blur-md">
-            {/* Top Part: Counter */}
             <div className="px-4 py-3 border-b border-[#a98d32]/10 flex items-center gap-3">
               <span className="relative flex h-2 w-2">
                 <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-[#dbc677] opacity-75"></span>
@@ -103,7 +106,6 @@ export default function RSVPSection() {
               </p>
             </div>
 
-            {/* Bottom Part: Scrolling Names */}
             <div className="px-4 py-2 bg-white/[0.02] h-10 flex items-center">
                 <div className="flex items-center gap-2 w-full">
                     <span className="text-white/20 text-[8px] uppercase tracking-widest font-sans font-bold">Live:</span>
@@ -210,6 +212,9 @@ export default function RSVPSection() {
         )}
 
       </div>
+      
+      {/* Texture Overlay */}
+      <div className="absolute inset-0 opacity-[0.03] pointer-events-none mix-blend-overlay bg-[url('https://www.transparenttextures.com/patterns/black-paper.png')]" />
     </section>
   );
 }

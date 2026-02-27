@@ -1,39 +1,31 @@
-import type { Metadata, Viewport } from "next";
-import { Montserrat, Great_Vibes, Playfair_Display } from "next/font/google";
+import type { Metadata } from "next";
+import { Montserrat, Great_Vibes } from "next/font/google";
 import "./globals.css";
 
-// Font Serif untuk tajuk/teks klasik (Luxury feel)
-const playfair = Playfair_Display({
-  subsets: ["latin"],
-  variable: "--font-serif",
-});
-
-// Font Sans untuk teks kecil/penerangan (Clean feel)
+// Font untuk tulisan biasa (Modern & Clean)
 const montserrat = Montserrat({ 
   subsets: ["latin"],
   variable: "--font-montserrat",
   weight: ["100", "300", "400", "700"]
 });
 
-// Font Script untuk Nama Pengantin (Handwriting)
+// Font untuk Nama Pengantin (Handwriting/Script)
 const greatVibes = Great_Vibes({ 
   subsets: ["latin"],
   variable: "--font-script",
   weight: ["400"]
 });
 
-export const metadata: Metadata = {
+export const metadata = {
   title: 'Walimatulurus Aiman & Adinda',
-  description: 'Undangan Rasmi ke Majlis Walimatulurus Aiman & Adinda',
-  // Tambah theme color supaya bar atas phone jadi hitam
-  themeColor: '#000000',
+  description: 'Undangan Rasmi',
 };
 
-export const viewport: Viewport = {
+export const viewport = {
   width: 'device-width',
   initialScale: 1,
   maximumScale: 1,
-  userScalable: false,
+  userScalable: false, // Bagus untuk kad kahwin supaya tak zoom lari snap
 };
 
 export default function RootLayout({
@@ -43,12 +35,7 @@ export default function RootLayout({
 }) {
   return (
     <html lang="ms" className="scroll-smooth">
-      <body className={`
-        ${playfair.variable} 
-        ${montserrat.variable} 
-        ${greatVibes.variable} 
-        font-serif antialiased bg-black text-[#d4af37]
-      `}>
+      <body className={`${montserrat.variable} ${greatVibes.variable} font-sans antialiased bg-[#0f0e0c]`}>
         {children}
       </body>
     </html>
