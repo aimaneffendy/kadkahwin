@@ -90,7 +90,6 @@ export default function WishSection() {
   if (isLoading) return <div className="h-screen w-full bg-black flex items-center justify-center text-[#dbc677] tracking-[0.5em] uppercase text-[10px]">Loading Registry...</div>;
 
   return (
-    /* FIX: Buang py-24 px-6 dari sini untuk tutup gap */
     <section className="min-h-screen w-full relative bg-black overflow-hidden flex flex-col font-serif">
       
       {/* BACKGROUND IMAGE - FULL BLEED */}
@@ -100,7 +99,6 @@ export default function WishSection() {
           className="w-full h-full object-cover object-right opacity-40"
           alt="Wish Background"
         />
-        {/* FIX: Gradient diperkemas untuk blend dengan section RSVP (atas) */}
         <div className="absolute inset-0 bg-gradient-to-b from-black via-black/20 to-black" />
       </div>
 
@@ -111,7 +109,7 @@ export default function WishSection() {
         ))}
       </div>
 
-      {/* CONTENT WRAPPER - Letak padding kat sini (py-32 px-10) */}
+      {/* CONTENT WRAPPER */}
       <div className="relative z-10 max-w-4xl mx-auto w-full flex flex-col h-full py-32 px-10">
         
         {/* HEADER TITLE */}
@@ -184,7 +182,10 @@ export default function WishSection() {
                       </div>
 
                       <div className="border-t border-white/10 pt-6">
-                        <p className="text-[#dbc677] text-[13px] md:text-[14px] font-black tracking-[0.5em] uppercase leading-tight line-clamp-1">{wish.nama}</p>
+                        {/* UPDATE: Nama boleh wrapping ke baris bawah jika panjang */}
+                        <p className="text-[#dbc677] text-[13px] md:text-[14px] font-black tracking-[0.5em] uppercase leading-snug break-words">
+                          {wish.nama}
+                        </p>
                         <p className="text-white/30 text-[9px] tracking-[0.3em] uppercase mt-2 font-medium">Tetamu Undangan</p>
                       </div>
                     </motion.div>
@@ -240,7 +241,10 @@ export default function WishSection() {
                 <p className="text-white/90 font-serif text-xl md:text-2xl leading-relaxed italic break-words">"{selectedWish.mesej}"</p>
               </div>
               <div className="border-t border-[#a98d32]/10 mt-8 pt-6">
-                <p className="text-[#dbc677] text-[15px] font-black tracking-[0.5em] uppercase">{selectedWish.nama}</p>
+                {/* UPDATE: Nama dalam modal juga boleh wrapping */}
+                <p className="text-[#dbc677] text-[15px] font-black tracking-[0.5em] uppercase leading-snug break-words">
+                  {selectedWish.nama}
+                </p>
                 <p className="text-white/30 text-[10px] tracking-[0.3em] uppercase mt-2 font-medium">Tetamu Undangan</p>
               </div>
             </motion.div>
