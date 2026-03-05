@@ -83,7 +83,7 @@ export default function QuoteSection() {
             className="pt-10 border-t border-white/10"
           >
             <p className="text-white/50 text-[13px] md:text-xs tracking-[0.3em] uppercase leading-loose font-light">
-              Semoga Penyatuan Ini Diberkati Dengan Sakinah, Mawaddah dan Rahmah hingga ke Syurga. <br className="hidden md:block" /> 
+              Semoga Penyatuan Ini Diberkati Dengan Sakinah, Mawaddah dan Rahmah <br className="hidden md:block" /> 
               hingga ke Syurga.
             </p>
           </motion.div>
