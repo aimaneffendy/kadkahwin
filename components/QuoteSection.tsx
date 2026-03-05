@@ -79,12 +79,12 @@ export default function QuoteSection() {
           <motion.div 
             initial={{ opacity: 0 }}
             whileInView={{ opacity: 1 }}
-            transition={{ duration: 1.5, delay: 0.8 }}
+            transition={{ duration: 1.2, delay: 0.4 }}
             className="pt-10 border-t border-white/10"
           >
             <p className="text-white/50 text-[13px] md:text-xs tracking-[0.3em] uppercase leading-loose font-light">
-              Semoga ikatan ini diberkati Allah SWT <br className="hidden md:block" /> 
-              dan kekal hingga ke Jannah.
+              Semoga Penyatuan Ini Diberkati Dengan Sakinah, Mawaddah dan Rahmah hingga ke Syurga. <br className="hidden md:block" /> 
+              hingga ke Syurga.
             </p>
           </motion.div>
         </div>

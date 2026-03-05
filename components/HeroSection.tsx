@@ -66,7 +66,7 @@ export default function HeroSection({ isOpen }: { isOpen: boolean }) {
           className="text-[10px] md:text-xs uppercase tracking-[0.5em] text-[#a98d32] font-bold" 
           style={premiumShadow}
         >
-          Meraikan Cinta
+          Menyulam kasih
         </motion.p>
 
         <motion.div

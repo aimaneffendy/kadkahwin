@@ -90,7 +90,7 @@ export default function DetailsSection() {
           </div>
 
           <p className="text-white/60 text-[13px] md:text-sm tracking-[0.2em] uppercase font-light">
-            Ke Raikan Cinta Putera Kami
+            Ke Majlis Memeteraikan Janji Putera Kami
           </p>
         </motion.div>
 
@@ -104,7 +104,7 @@ export default function DetailsSection() {
             </h4>
 
             <div className="flex flex-col items-center gap-2">
-              <p className="text-[#a98d32]/50 text-[10px] tracking-[0.5em] uppercase italic font-medium">Dengan Pasangannya</p>
+              <p className="text-[#a98d32]/50 text-[10px] tracking-[0.5em] uppercase italic font-medium">Bersama Suri Pilihannya</p>
               <div className="h-[0.5px] w-16 bg-[#a98d32]/30" />
             </div>
 
