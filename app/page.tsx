@@ -20,6 +20,25 @@ export default function KadKahwin() {
 
   useEffect(() => { setMounted(true); }, []);
 
+  // --- LOGIK MUSIC TOGGLE DARI VIDEO POPUP ---
+  useEffect(() => {
+    const handleMusicToggle = (e: any) => {
+      const shouldPlay = e.detail.play;
+      if (audioRef.current) {
+        if (shouldPlay) {
+          audioRef.current.play().catch(() => {});
+          setIsPlay(true);
+        } else {
+          audioRef.current.pause();
+          setIsPlay(false);
+        }
+      }
+    };
+
+    window.addEventListener('toggleMusic', handleMusicToggle);
+    return () => window.removeEventListener('toggleMusic', handleMusicToggle);
+  }, []);
+
   // Logic Scroll untuk Arrow Up
   useEffect(() => {
     const handleScroll = () => {
@@ -60,11 +79,10 @@ export default function KadKahwin() {
       {isOpen && (
         <main className="relative w-full overflow-x-hidden bg-black">
           
-          {/* Hero Section (Full Screen) */}
           <div id="hero" className="relative">
             <HeroSection isOpen={isOpen} />
             
-            {/* Soundwave Animasi - Kekal di Hero */}
+            {/* Soundwave Animasi */}
             <div className="absolute bottom-24 left-1/2 -translate-x-1/2 flex flex-col items-center gap-2 opacity-40 z-20 pointer-events-none">
               <div className="flex items-end gap-[2px] h-3">
                 {[...Array(12)].map((_, i) => (
@@ -80,14 +98,13 @@ export default function KadKahwin() {
             </div>
           </div>
 
-          {/* Continuous Sections */}
           <QuoteSection />
           <DetailsSection />
           <LocationSection />
           <RSVPSection />
           <WishSection />
 
-          {/* Floating Player Control - PINDAH KE KANAN */}
+          {/* Floating Player Control */}
           <div className="fixed bottom-8 right-8 z-50">
             <button 
               onClick={() => { 
@@ -101,9 +118,7 @@ export default function KadKahwin() {
             </button>
           </div>
 
-          {/* UPDATED FOOTER - #AIMANXADINDA */}
           <footer className="py-24 flex flex-col items-center justify-center bg-black relative overflow-hidden">
-            {/* Aesthetic Vertical Line */}
             <motion.div 
               initial={{ height: 0, opacity: 0 }}
               whileInView={{ height: 40, opacity: 0.3 }}
@@ -111,7 +126,6 @@ export default function KadKahwin() {
               transition={{ duration: 1 }}
               className="w-[1px] bg-[#a98d32] mb-8"
             />
-
             <motion.div
               initial={{ opacity: 0, letterSpacing: "0.2em", y: 10 }}
               whileInView={{ opacity: 0.4, letterSpacing: "0.6em", y: 0 }}
@@ -121,7 +135,6 @@ export default function KadKahwin() {
             >
               #Aiman&Adinda
             </motion.div>
-            
             <p className="mt-4 text-[8px] tracking-[0.2em] uppercase text-white/20">
               Terima Kasih
             </p>
@@ -154,7 +167,6 @@ export default function KadKahwin() {
           height: auto;
           scroll-behavior: smooth;
         } 
-        /* Reset any potential margin/padding from sections */
         section { 
           margin: 0 !important;
           padding-top: 5rem;

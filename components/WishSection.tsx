@@ -4,7 +4,6 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { Edit3, X, Send, Heart, ChevronLeft, ChevronRight } from 'lucide-react';
 import { supabase } from '@/lib/supabase'; 
 
-// 1. KOMPONEN HATI TERAPUNG
 const FloatingHeart = ({ delay, duration, x, y, scale }: { delay: number; duration: number; x: number; y: number; scale: number }) => (
   <motion.div
     className="absolute text-[#dbc677] pointer-events-none"
@@ -39,13 +38,13 @@ export default function WishSection() {
   const [isSending, setIsSending] = useState(false);
 
   const floatingHeartsData = useMemo(() => {
-    return Array.from({ length: 20 }).map((_, i) => ({
+    return Array.from({ length: 12 }).map((_, i) => ({
       id: i,
-      delay: Math.random() * 10,
-      duration: 6 + Math.random() * 6,
+      delay: Math.random() * 20, // Tambah delay supaya tak keluar serentak
+      duration: 15 + Math.random() * 10, // Slowkan: antara 15s hingga 25s
       x: Math.random() * 95,
       y: 110,
-      scale: 0.4 + Math.random() * 0.4 
+      scale: 0.3 + Math.random() * 0.4 // Kecilkan sikit scale untuk nampak lebih halus
     }));
   }, []);
 
@@ -92,134 +91,97 @@ export default function WishSection() {
   return (
     <section className="min-h-screen w-full relative bg-black overflow-hidden flex flex-col font-serif">
       
-      {/* BACKGROUND IMAGE - FULL BLEED */}
       <div className="absolute inset-0 w-full h-full z-0 pointer-events-none">
-        <img 
-          src="/backgroundmain3.webp" 
-          className="w-full h-full object-cover object-right opacity-40"
-          alt="Wish Background"
-        />
+        <img src="/backgroundmain3.webp" className="w-full h-full object-cover object-right opacity-40" alt="Wish Background" />
         <div className="absolute inset-0 bg-gradient-to-b from-black via-black/20 to-black" />
       </div>
 
-      {/* LOVE TERAPUNG */}
       <div className="absolute inset-0 z-[5] pointer-events-none overflow-hidden">
         {floatingHeartsData.map(heart => (
           <FloatingHeart key={heart.id} {...heart} />
         ))}
       </div>
 
-      {/* CONTENT WRAPPER */}
-      <div className="relative z-10 max-w-4xl mx-auto w-full flex flex-col h-full py-32 px-10">
+      <div className="relative z-10 max-w-4xl mx-auto w-full flex flex-col h-full py-32 overflow-hidden">
         
-        {/* HEADER TITLE */}
-        <motion.div
-          initial={{ opacity: 0, y: 30 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: false, amount: 0.3 }}
-          transition={{ duration: 1, ease: "easeOut" }}
-          className="mb-14"
-        >
+        {/* HEADER */}
+        <div className="px-10 mb-14">
           <div className="flex items-center gap-3 mb-4">
-            <motion.span 
-              initial={{ width: 0 }}
-              whileInView={{ width: 40 }}
-              viewport={{ once: false }}
-              transition={{ duration: 0.8, delay: 0.3 }}
-              className="h-[1px] bg-[#a98d32]" 
-            />
+            <motion.span initial={{ width: 0 }} whileInView={{ width: 40 }} transition={{ duration: 0.8 }} className="h-[1px] bg-[#a98d32]" />
             <p className="text-[#a98d32] text-[9px] tracking-[0.6em] uppercase font-bold">Tinta Kasih</p>
           </div>
           <h2 className="text-[#dbc677] text-6xl md:text-8xl font-light leading-[0.85] tracking-tighter uppercase">
             Bingkisan <br />
-            <motion.span 
-              initial={{ opacity: 0 }}
-              whileInView={{ opacity: 0.8 }}
-              viewport={{ once: false }}
-              transition={{ duration: 1, delay: 0.5 }}
-              className="italic font-extralight lowercase text-white"
-            >
-              ucapan.
-            </motion.span>
+            <span className="italic font-extralight lowercase text-white">ucapan.</span>
           </h2>
-        </motion.div>
+        </div>
 
-        {/* CAROUSEL CONTENT */}
-        <motion.div 
-          initial={{ opacity: 0, scale: 0.95 }}
-          whileInView={{ opacity: 1, scale: 1 }}
-          viewport={{ once: false, amount: 0.2 }}
-          transition={{ duration: 0.8, delay: 0.2 }}
-          className="flex flex-col items-center justify-center flex-1"
-        >
-          <div className="relative w-full max-w-sm flex items-center justify-center h-[400px]">
-            {wishes.length > 0 ? (
-              <AnimatePresence initial={false} mode="wait">
-                {wishes.map((wish, i) => {
-                  if (i !== index) return null;
-                  return (
-                    <motion.div
-                      key={wish.id}
-                      drag="x"
-                      dragConstraints={{ left: 0, right: 0 }}
-                      onDragEnd={onDragEnd}
-                      initial={{ opacity: 0, x: 20 }}
-                      animate={{ opacity: 1, x: 0 }}
-                      exit={{ opacity: 0, x: -20 }}
-                      className="absolute w-full max-w-[320px] h-full bg-white/[0.03] backdrop-blur-xl border border-white/10 p-10 rounded-sm shadow-2xl flex flex-col justify-between cursor-grab active:cursor-grabbing touch-none"
-                    >
-                      <div className="space-y-4 text-left">
-                        <Heart size={14} className="text-[#a98d32]/60" />
-                        <p className="text-white/90 text-[16px] md:text-[18px] leading-[1.5] italic font-serif line-clamp-[7] break-words">
-                          "{wish.mesej}" 
-                        </p>
-                        
-                        {wish.mesej.length > 120 && (
-                          <button onClick={() => setSelectedWish(wish)} className="text-[#dbc677] text-[10px] tracking-[0.2em] uppercase font-bold border-b border-[#dbc677]/30 pb-0.5 inline-block">
-                            Baca Penuh
-                          </button>
-                        )}
-                      </div>
+        {/* STACKED CAROUSEL - SPREAD STYLE */}
+        <div className="relative flex-1 flex items-center justify-center">
+          <div className="relative w-full h-[400px] flex items-center justify-center">
+            {wishes.map((wish, i) => {
+              // Logik kedudukan: -1 (kiri), 0 (tengah), 1 (kanan)
+              const offset = i - index;
+              
+              // Hanya render kad yang berdekatan untuk performance
+              if (Math.abs(offset) > 2) return null;
 
-                      <div className="border-t border-white/10 pt-6">
-                        {/* UPDATE: Nama boleh wrapping ke baris bawah jika panjang */}
-                        <p className="text-[#dbc677] text-[13px] md:text-[14px] font-black tracking-[0.5em] uppercase leading-snug break-words">
-                          {wish.nama}
-                        </p>
-                        <p className="text-white/30 text-[9px] tracking-[0.3em] uppercase mt-2 font-medium">Tetamu Undangan</p>
-                      </div>
-                    </motion.div>
-                  );
-                })}
-              </AnimatePresence>
-            ) : (
-              <p className="text-white/20 text-[10px] tracking-widest uppercase italic text-center">Belum ada ucapan...</p>
-            )}
+              return (
+                <motion.div
+                  key={wish.id}
+                  drag={offset === 0 ? "x" : false}
+                  dragConstraints={{ left: 0, right: 0 }}
+                  onDragEnd={onDragEnd}
+                  initial={false}
+                  animate={{
+                    x: offset * 280, // Jarak antara kad
+                    scale: offset === 0 ? 1 : 0.8,
+                    opacity: offset === 0 ? 1 : 0.4,
+                    zIndex: 10 - Math.abs(offset),
+                    rotateY: offset * 15, // Efek 3D sikit
+                  }}
+                  transition={{ type: "spring", stiffness: 260, damping: 25 }}
+                  className="absolute w-full max-w-[300px] h-full bg-white/[0.03] backdrop-blur-xl border border-white/10 p-10 rounded-sm shadow-2xl flex flex-col justify-between cursor-grab active:cursor-grabbing touch-none"
+                  style={{ perspective: "1000px" }}
+                >
+                  <div className="space-y-4 text-left">
+                    <Heart size={14} className="text-[#a98d32]/60" />
+                    <p className="text-white/90 text-[15px] leading-[1.6] italic font-serif line-clamp-[8] break-words">
+                      "{wish.mesej}" 
+                    </p>
+                    {wish.mesej.length > 100 && offset === 0 && (
+                      <button onClick={() => setSelectedWish(wish)} className="text-[#dbc677] text-[10px] tracking-[0.2em] uppercase font-bold border-b border-[#dbc677]/30 pb-0.5">
+                        Baca Penuh
+                      </button>
+                    )}
+                  </div>
+
+                  <div className="border-t border-white/10 pt-6">
+                    <p className="text-[#dbc677] text-[13px] font-black tracking-[0.4em] uppercase leading-tight break-words">
+                      {wish.nama}
+                    </p>
+                    <p className="text-white/30 text-[9px] tracking-[0.3em] uppercase mt-1">Tetamu Undangan</p>
+                  </div>
+                </motion.div>
+              );
+            })}
           </div>
+        </div>
 
-          <div className="flex flex-col items-center gap-4 mt-8">
-            <div className="flex items-center gap-8">
-              <button onClick={prevStep} className="p-2 text-[#a98d32]/40 hover:text-[#a98d32] transition-colors">
-                <ChevronLeft size={18} />
-              </button>
-              <div className="text-[#a98d32] font-sans text-[10px] tracking-[0.5em] font-bold">
-                {index + 1} / {wishes.length}
-              </div>
-              <button onClick={nextStep} className="p-2 text-[#a98d32]/40 hover:text-[#a98d32] transition-colors">
-                <ChevronRight size={18} />
-              </button>
+        {/* NAVIGATION & BUTTON */}
+        <div className="flex flex-col items-center mt-12 px-10">
+          <div className="flex items-center gap-8 mb-8">
+            <button onClick={prevStep} disabled={index === 0} className="p-2 text-[#a98d32]/40 hover:text-[#a98d32] disabled:opacity-5 transition-colors">
+              <ChevronLeft size={20} />
+            </button>
+            <div className="text-[#a98d32] font-sans text-[10px] tracking-[0.5em] font-bold">
+              {index + 1} / {wishes.length}
             </div>
+            <button onClick={nextStep} disabled={index === wishes.length - 1} className="p-2 text-[#a98d32]/40 hover:text-[#a98d32] disabled:opacity-5 transition-colors">
+              <ChevronRight size={20} />
+            </button>
           </div>
-        </motion.div>
 
-        {/* BUTTON TITIP UCAPAN */}
-        <motion.div 
-          initial={{ opacity: 0, y: 20 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: false }}
-          transition={{ duration: 0.6, delay: 0.4 }}
-          className="mt-12 flex justify-center pb-12"
-        >
           <button 
             onClick={() => setIsFormOpen(true)} 
             className="flex items-center gap-4 px-12 py-4 bg-[#dbc677] hover:bg-[#a98d32] transition-all shadow-2xl active:scale-[0.98]"
@@ -227,7 +189,7 @@ export default function WishSection() {
             <Edit3 size={14} className="text-black" />
             <span className="text-black text-[11px] font-black tracking-[0.3em] uppercase">Titipkan Ucapan</span>
           </button>
-        </motion.div>
+        </div>
       </div>
 
       {/* MODAL POPUP & FORM */}
@@ -241,10 +203,7 @@ export default function WishSection() {
                 <p className="text-white/90 font-serif text-xl md:text-2xl leading-relaxed italic break-words">"{selectedWish.mesej}"</p>
               </div>
               <div className="border-t border-[#a98d32]/10 mt-8 pt-6">
-                {/* UPDATE: Nama dalam modal juga boleh wrapping */}
-                <p className="text-[#dbc677] text-[15px] font-black tracking-[0.5em] uppercase leading-snug break-words">
-                  {selectedWish.nama}
-                </p>
+                <p className="text-[#dbc677] text-[15px] font-black tracking-[0.5em] uppercase leading-snug break-words">{selectedWish.nama}</p>
                 <p className="text-white/30 text-[10px] tracking-[0.3em] uppercase mt-2 font-medium">Tetamu Undangan</p>
               </div>
             </motion.div>

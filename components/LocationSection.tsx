@@ -7,7 +7,24 @@ export default function LocationSection() {
   const [showVideo, setShowVideo] = useState(false);
   const [copied, setCopied] = useState(false);
 
-  const address = "Rich Asians Hall, Dataran Ecohill, Semenyih, 43500 Selangor";
+  // Alamat penuh yang baru
+  const address = "G-04-L3, Level 3, Block G, Pusat Komersial Dataran Ecohill, Jln Ecohill 1/2, Setia Ecohill, 43500 Semenyih, Selangor";
+
+  // Fungsi untuk hantar isyarat ke page.tsx (untuk pause/play lagu)
+  const toggleBackgroundMusic = (play: boolean) => {
+    const event = new CustomEvent('toggleMusic', { detail: { play } });
+    window.dispatchEvent(event);
+  };
+
+  const handleOpenVideo = () => {
+    setShowVideo(true);
+    toggleBackgroundMusic(false); // Berhenti lagu latar
+  };
+
+  const handleCloseVideo = () => {
+    setShowVideo(false);
+    toggleBackgroundMusic(true); // Sambung lagu latar
+  };
 
   const handleCopy = () => {
     navigator.clipboard.writeText(address);
@@ -16,12 +33,9 @@ export default function LocationSection() {
   };
 
   return (
-    /* FIX: Buang padding dari section untuk elakkan gap hitam */
     <section className="min-h-screen w-full relative bg-black overflow-hidden flex flex-col font-serif">
       
-      {/* 1. BACKGROUND IMAGE - ANIMATED FADE IN (DARI GELAP) 
-          Setiap kali user lalu (once: false), dia akan fade in slow-slow
-      */}
+      {/* BACKGROUND IMAGE */}
       <div className="absolute inset-0 w-full h-full z-0 overflow-hidden bg-black">
         <motion.img 
           src="/dewan.webp" 
@@ -32,14 +46,12 @@ export default function LocationSection() {
           viewport={{ once: false, amount: 0.1 }}
           transition={{ duration: 3, ease: "easeInOut" }}
         />
-        {/* Gradient diperkuatkan untuk seamless transition dengan section atas & bawah */}
         <div className="absolute inset-0 bg-gradient-to-b from-black via-transparent to-black z-10" />
       </div>
 
-      {/* 2. MAIN CONTENT WRAPPER - Letak py-32 di sini untuk ruang premium */}
-      <div className="relative z-10 flex flex-col px-10 h-full max-w-4xl mx-auto w-full py-32 flex-1 justify-center">
+      <div className="relative z-20 flex flex-col px-10 h-full max-w-4xl mx-auto w-full py-32 flex-1 justify-center">
         
-        {/* TOP: EDITORIAL HEADER */}
+        {/* HEADER */}
         <motion.div 
           initial={{ opacity: 0, y: 30 }}
           whileInView={{ opacity: 1, y: 0 }}
@@ -48,82 +60,51 @@ export default function LocationSection() {
           className="mb-16"
         >
           <div className="flex items-center gap-3 mb-6">
-            <motion.span 
-              initial={{ width: 0 }}
-              whileInView={{ width: 40 }}
-              viewport={{ once: false }}
-              transition={{ duration: 0.8, delay: 0.3 }}
-              className="h-[1px] bg-[#a98d32]" 
-            />
+            <motion.span initial={{ width: 0 }} whileInView={{ width: 40 }} className="h-[1px] bg-[#a98d32]" />
             <p className="text-[#a98d32] text-[9px] tracking-[0.6em] uppercase font-bold">Lokasi Majlis</p>
           </div>
           <h2 className="text-[#dbc677] text-6xl md:text-8xl font-light leading-[0.85] tracking-tighter uppercase">
             Rich <br />
-            <motion.span 
-              initial={{ opacity: 0 }}
-              whileInView={{ opacity: 0.8 }}
-              viewport={{ once: false }}
-              transition={{ duration: 1, delay: 0.5 }}
-              className="italic font-extralight lowercase text-white"
-            >
-              Asians
-            </motion.span> <br />
+            <motion.span initial={{ opacity: 0 }} whileInView={{ opacity: 0.8 }} className="italic font-extralight lowercase text-white">Asians</motion.span> <br />
             Hall.
           </h2>
         </motion.div>
 
-        {/* MIDDLE: INFO SECTION */}
+        {/* INFO SECTION (TARIKH & MASA KEMASKINI) */}
         <div className="space-y-12 mb-16">
-          <motion.div 
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: false }}
-            transition={{ duration: 0.8, delay: 0.4 }}
-            className="pt-4"
-          >
+          <motion.div initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} className="pt-4">
             <div className="grid grid-cols-2 gap-4 w-full">
               <div className="space-y-2">
                 <p className="text-[#dbc677] text-[13px] tracking-[0.3em] uppercase font-black">Tarikh</p>
                 <p className="text-white text-2xl md:text-3xl tracking-tight font-medium uppercase leading-tight">14.06.2026</p>
-                <p className="text-[#a98d32] text-[10px] tracking-[0.1em] uppercase font-bold italic">Hari Ahad</p>
+                <p className="text-[#a98d32] text-[13px] tracking-[0.1em] uppercase font-bold italic">Ahad</p>
               </div>
 
               <div className="space-y-2">
                 <p className="text-[#dbc677] text-[13px] tracking-[0.3em] uppercase font-black">Masa</p>
-                <p className="text-white text-2xl md:text-3xl tracking-tight font-medium italic leading-tight">11:00 — 16:00</p>
-                <p className="text-[#a98d32] text-[10px] tracking-[0.1em] uppercase font-bold italic">Jamuan Makan</p>
+                <p className="text-white text-2xl md:text-3xl tracking-tight font-medium italic leading-tight">10.00 Pagi—4.00 Petang</p>
               </div>
             </div>
           </motion.div>
 
-          {/* ADDRESS BOX */}
-          <motion.div 
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: false }}
-            transition={{ duration: 0.8, delay: 0.6 }}
-            className="flex flex-col gap-6"
-          >
-            <div className="max-w-[320px]">
+          {/* ADDRESS BOX (ALAMAT KEMASKINI) */}
+          <motion.div initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} className="flex flex-col gap-6">
+            <div className="max-w-[320px] md:max-w-[450px]">
               <p className="text-white/80 text-[14px] leading-relaxed tracking-wide font-light italic">
-                Dataran Ecohill, Semenyih, 43500 <br />
-                Selangor Darul Ehsan, Malaysia.
+                G-04-L3, Level 3, Block G, <br />
+                Pusat Komersial Dataran Ecohill, <br />
+                Jln Ecohill 1/2, Setia Ecohill, <br />
+                43500 Semenyih, Selangor.
               </p>
             </div>
             
             <div className="flex items-center gap-8">
-              <button 
-                onClick={handleCopy}
-                className="flex items-center gap-2 text-[#dbc677] text-[10px] tracking-[0.3em] uppercase font-bold border-b border-[#a98d32]/30 pb-1 hover:text-white transition-colors"
-              >
+              <button onClick={handleCopy} className="flex items-center gap-2 text-[#dbc677] text-[10px] tracking-[0.3em] uppercase font-bold border-b border-[#a98d32]/30 pb-1 hover:text-white transition-colors">
                 {copied ? <Check size={12} /> : <Copy size={12} />}
                 {copied ? 'Tersalin' : 'Salin Alamat'}
               </button>
 
-              <button 
-                onClick={() => setShowVideo(true)}
-                className="flex items-center gap-2 text-[#dbc677] text-[10px] tracking-[0.3em] uppercase font-bold border-b border-[#a98d32]/30 pb-1 hover:text-white transition-colors"
-              >
+              <button onClick={handleOpenVideo} className="flex items-center gap-2 text-[#dbc677] text-[10px] tracking-[0.3em] uppercase font-bold border-b border-[#a98d32]/30 pb-1 hover:text-white transition-colors">
                 <Play size={10} className="fill-[#dbc677]" />
                 Lihat Dewan
               </button>
@@ -131,28 +112,15 @@ export default function LocationSection() {
           </motion.div>
         </div>
 
-        {/* BOTTOM: NAVIGATION BUTTONS */}
-        <motion.div 
-          initial={{ opacity: 0, y: 20 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: false }}
-          transition={{ duration: 0.8, delay: 0.8 }}
-          className="grid grid-cols-2 gap-4"
-        >
-          <a 
-            href="https://waze.com/ul?q=Rich%20Asians%20Hall%20Ecohill" target="_blank"
-            className="group h-14 border border-[#a98d32]/40 flex items-center justify-center transition-all hover:bg-[#a98d32]/5"
-          >
+        {/* NAVIGATION BUTTONS */}
+        <motion.div initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} className="grid grid-cols-2 gap-4">
+          <a href="https://www.waze.com/en/live-map/directions/my/selangor/semenyih/rich-hall-by-kamalinda?place=ChIJxQESGrvPzTER23uhpxuCoV0" target="_blank" className="group h-14 border border-[#a98d32]/40 flex items-center justify-center transition-all hover:bg-[#a98d32]/5">
             <div className="flex items-center gap-3">
               <span className="text-[#dbc677] text-[10px] font-bold tracking-[0.4em] uppercase">Waze</span>
               <Navigation size={14} className="text-[#a98d32]" />
             </div>
           </a>
-
-          <a 
-            href="https://www.google.com/maps/search/?api=1&query=Rich+Asians+Hall+Ecohill" target="_blank"
-            className="group h-14 bg-[#dbc677] flex items-center justify-center shadow-2xl transition-all hover:bg-[#ebd996]"
-          >
+          <a href="https://goo.gl/maps/5WqcRMt5xT5VMUSSA" target="_blank" className="group h-14 bg-[#dbc677] flex items-center justify-center shadow-2xl transition-all hover:bg-[#ebd996]">
             <div className="flex items-center gap-3">
               <span className="text-black text-[10px] font-bold tracking-[0.4em] uppercase">Maps</span>
               <Compass size={14} className="text-black" />
@@ -161,18 +129,29 @@ export default function LocationSection() {
         </motion.div>
       </div>
 
-      {/* POPUP VIDEO */}
+      {/* VIDEO POPUP (9:16 Portrait) */}
       <AnimatePresence>
         {showVideo && (
           <motion.div 
             initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
-            className="fixed inset-0 z-[200] bg-black/98 backdrop-blur-xl flex items-center justify-center p-6"
+            className="fixed inset-0 z-[200] bg-black/98 backdrop-blur-xl flex items-center justify-center p-4"
           >
-            <button onClick={() => setShowVideo(false)} className="absolute top-8 right-8 text-white/40 hover:text-white transition-colors">
+            <button onClick={handleCloseVideo} className="absolute top-8 right-8 text-white/40 hover:text-white transition-colors z-[210]">
               <X size={28} />
             </button>
-            <motion.div initial={{ scale: 0.95 }} animate={{ scale: 1 }} exit={{ scale: 0.95 }} className="w-full max-w-4xl aspect-video border border-[#a98d32]/30 bg-black shadow-2xl overflow-hidden">
-              <iframe className="w-full h-full" src="https://www.youtube.com/embed/dQw4w9WgXcQ" frameBorder="0" allowFullScreen />
+            <motion.div 
+              initial={{ scale: 0.9, opacity: 0 }} 
+              animate={{ scale: 1, opacity: 1 }} 
+              exit={{ scale: 0.9, opacity: 0 }} 
+              className="w-full max-w-md aspect-[9/16] bg-black border border-[#a98d32]/30 shadow-2xl relative overflow-hidden"
+            >
+              <video 
+                src="/kamalinda.mp4" 
+                className="w-full h-full object-cover"
+                controls
+                autoPlay
+                playsInline
+              />
             </motion.div>
           </motion.div>
         )}
