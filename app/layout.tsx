@@ -1,4 +1,4 @@
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 import { Montserrat, Great_Vibes } from "next/font/google";
 import "./globals.css";
 
@@ -16,16 +16,45 @@ const greatVibes = Great_Vibes({
   weight: ["400"]
 });
 
-export const metadata = {
+// Metadata untuk SEO & Social Media Sharing (WhatsApp, FB, etc.)
+export const metadata: Metadata = {
   title: 'Walimatulurus Aiman & Adinda',
-  description: 'Undangan Rasmi',
+  description: 'Undangan Rasmi ke Majlis Perkahwinan Aiman & Adinda',
+  metadataBase: new URL('https://aimandinda.my'), // TUKAR ke domain sebenar kau nanti
+  openGraph: {
+    title: 'Walimatulurus Aiman & Adinda',
+    description: 'Undangan Rasmi ke Majlis Perkahwinan kami.',
+    url: 'https://aimandinda.my',
+    siteName: 'Walimatulurus',
+    images: [
+      {
+        url: '/opengraph-image.png', // Pastikan fail ini ada dalam folder /public atau /app
+        width: 1080,
+        height: 1080,
+        alt: 'Wedding Invitation Aiman & Adinda',
+      },
+    ],
+    locale: 'ms_MY',
+    type: 'website',
+  },
+  twitter: {
+    card: 'summary_large_image',
+    title: 'Walimatulurus Aiman & Adinda',
+    description: 'Undangan Rasmi ke Majlis Perkahwinan kami.',
+    images: ['/opengraph-image.png'],
+  },
+  icons: {
+    icon: '/icon.png',
+    apple: '/apple-icon.png',
+  },
 };
 
-export const viewport = {
+// Viewport settings (Next.js 14+ galakkan asingkan dari Metadata)
+export const viewport: Viewport = {
   width: 'device-width',
   initialScale: 1,
   maximumScale: 1,
-  userScalable: false, // Bagus untuk kad kahwin supaya tak zoom lari snap
+  userScalable: false,
 };
 
 export default function RootLayout({
