@@ -1,179 +1,156 @@
-'use client';
-import { useState, useRef, useEffect } from 'react';
-import { AnimatePresence, motion } from 'framer-motion';
-import { Pause, Play, ChevronUp } from 'lucide-react';
+"use client";
 
-import EntranceSection from '../components/EntranceSection';
-import HeroSection from '../components/HeroSection';
-import QuoteSection from '../components/QuoteSection';
-import DetailsSection from '../components/DetailsSection';
-import LocationSection from '../components/LocationSection';
-import RSVPSection from '../components/RSVPSection';
-import WishSection from '../components/WishSection';
+import React, { useEffect, useRef } from 'react';
+import Link from 'next/link';
+import { motion } from 'framer-motion';
+import { Rocket, ChevronRight } from 'lucide-react';
 
-export default function KadKahwin() {
-  const [isOpen, setIsOpen] = useState(false);
-  const [isPlay, setIsPlay] = useState(false);
-  const [mounted, setMounted] = useState(false);
-  const [showScrollTop, setShowScrollTop] = useState(false);
-  const audioRef = useRef<HTMLAudioElement>(null);
+export default function NotFound() {
+  const canvasRef = useRef<HTMLCanvasElement>(null);
 
-  useEffect(() => { setMounted(true); }, []);
-
-  // --- LOGIK MUSIC TOGGLE DARI VIDEO POPUP ---
+  // Particle System Logic for Moving Background
   useEffect(() => {
-    const handleMusicToggle = (e: any) => {
-      const shouldPlay = e.detail.play;
-      if (audioRef.current) {
-        if (shouldPlay) {
-          audioRef.current.play().catch(() => {});
-          setIsPlay(true);
-        } else {
-          audioRef.current.pause();
-          setIsPlay(false);
-        }
+    const canvas = canvasRef.current;
+    if (!canvas) return;
+    const ctx = canvas.getContext('2d');
+    if (!ctx) return;
+
+    let particles: Particle[] = [];
+    let animationFrameId: number;
+
+    const resizeCanvas = () => {
+      canvas.width = window.innerWidth;
+      canvas.height = window.innerHeight;
+    };
+
+    class Particle {
+      x: number; y: number; size: number; speedX: number; speedY: number;
+      constructor() {
+        this.x = Math.random() * canvas!.width;
+        this.y = Math.random() * canvas!.height;
+        this.size = Math.random() * 2;
+        this.speedX = (Math.random() - 0.5) * 0.5;
+        this.speedY = (Math.random() - 0.5) * 0.5;
+      }
+      update() {
+        this.x += this.speedX;
+        this.y += this.speedY;
+        if (this.x > canvas!.width) this.x = 0;
+        if (this.x < 0) this.x = canvas!.width;
+        if (this.y > canvas!.height) this.y = 0;
+        if (this.y < 0) this.y = canvas!.height;
+      }
+      draw() {
+        ctx!.fillStyle = 'rgba(255, 255, 255, 0.5)';
+        ctx!.beginPath();
+        ctx!.arc(this.x, this.y, this.size, 0, Math.PI * 2);
+        ctx!.fill();
+      }
+    }
+
+    const init = () => {
+      particles = [];
+      for (let i = 0; i < 150; i++) {
+        particles.push(new Particle());
       }
     };
 
-    window.addEventListener('toggleMusic', handleMusicToggle);
-    return () => window.removeEventListener('toggleMusic', handleMusicToggle);
-  }, []);
-
-  // Logic Scroll untuk Arrow Up
-  useEffect(() => {
-    const handleScroll = () => {
-      setShowScrollTop(window.scrollY > 600);
+    const animate = () => {
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      particles.forEach(p => {
+        p.update();
+        p.draw();
+      });
+      animationFrameId = requestAnimationFrame(animate);
     };
-    window.addEventListener('scroll', handleScroll, { passive: true });
-    return () => window.removeEventListener('scroll', handleScroll);
+
+    window.addEventListener('resize', resizeCanvas);
+    resizeCanvas();
+    init();
+    animate();
+
+    return () => {
+      window.removeEventListener('resize', resizeCanvas);
+      cancelAnimationFrame(animationFrameId);
+    };
   }, []);
-
-  const handleOpen = () => {
-    setIsOpen(true);
-    setIsPlay(true);
-    setTimeout(() => { 
-      if (audioRef.current) {
-        audioRef.current.play().catch(() => {
-          console.log("Autoplay dicegah oleh browser");
-        });
-      }
-    }, 500);
-  };
-
-  if (!mounted) return null;
 
   return (
-    <div className="bg-black text-[#fbf8f4] font-serif relative min-h-screen">
-      <audio ref={audioRef} loop src="/rindulukisan.mp3" />
+    <main className="relative min-h-screen w-full bg-[#030303] flex items-center justify-center overflow-hidden">
+      {/* Interactive Background Canvas */}
+      <canvas
+        ref={canvasRef}
+        className="absolute inset-0 z-0 pointer-events-none"
+      />
 
-      {/* 1. Entrance Section */}
-      <AnimatePresence mode="wait">
-        {!isOpen && (
-          <div className="fixed inset-0 z-[100]">
-            <EntranceSection key="entrance" onOpen={handleOpen} />
-          </div>
-        )}
-      </AnimatePresence>
+      {/* Radial Glow Overlay */}
+      <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,transparent_0%,rgba(3,3,3,0.8)_80%)] z-1" />
 
-      {/* 2. Main Content */}
-      {isOpen && (
-        <main className="relative w-full overflow-x-hidden bg-black">
-          
-          <div id="hero" className="relative">
-            <HeroSection isOpen={isOpen} />
-            
-            {/* Soundwave Animasi */}
-            <div className="absolute bottom-24 left-1/2 -translate-x-1/2 flex flex-col items-center gap-2 opacity-40 z-20 pointer-events-none">
-              <div className="flex items-end gap-[2px] h-3">
-                {[...Array(12)].map((_, i) => (
-                  <motion.div
-                    key={i}
-                    animate={isPlay ? { height: [2, 10, 2] } : { height: 1 }}
-                    transition={{ repeat: Infinity, duration: 0.5 + Math.random() * 0.5 }}
-                    className="w-[1.5px] bg-[#a98d32] rounded-full"
-                  />
-                ))}
-              </div>
-              <span className="text-[6px] tracking-[0.6em] uppercase text-[#a98d32]">Rindu Lukisan</span>
-            </div>
-          </div>
-
-          <QuoteSection />
-          <DetailsSection />
-          <LocationSection />
-          <RSVPSection />
-          <WishSection />
-
-          {/* Floating Player Control */}
-          <div className="fixed bottom-8 right-8 z-50">
-            <button 
-              onClick={() => { 
-                if (isPlay) audioRef.current?.pause(); 
-                else audioRef.current?.play(); 
-                setIsPlay(!isPlay); 
-              }} 
-              className="w-10 h-10 rounded-full border border-[#fbf8f4]/10 flex items-center justify-center bg-black/40 backdrop-blur-xl text-[#dbc677] shadow-xl"
-            >
-              {isPlay ? <Pause size={14} /> : <Play size={14} className="ml-0.5" />}
-            </button>
-          </div>
-
-          <footer className="py-24 flex flex-col items-center justify-center bg-black relative overflow-hidden">
-            <motion.div 
-              initial={{ height: 0, opacity: 0 }}
-              whileInView={{ height: 40, opacity: 0.3 }}
-              viewport={{ once: false }}
-              transition={{ duration: 1 }}
-              className="w-[1px] bg-[#a98d32] mb-8"
-            />
-            <motion.div
-              initial={{ opacity: 0, letterSpacing: "0.2em", y: 10 }}
-              whileInView={{ opacity: 0.4, letterSpacing: "0.6em", y: 0 }}
-              viewport={{ once: false }}
-              transition={{ duration: 1.5, ease: "easeOut" }}
-              className="text-[#dbc677] text-[11px] font-bold text-center"
-            >
-              #Aiman&Adinda
-            </motion.div>
-            <p className="mt-4 text-[8px] tracking-[0.2em] uppercase text-white/20">
-              Terima Kasih
-            </p>
-          </footer>
-        </main>
-      )}
-
-      {/* 3. Floating Arrow Up */}
-      <AnimatePresence>
-        {showScrollTop && (
-          <motion.button 
-            initial={{ opacity: 0, y: 10 }}
-            animate={{ opacity: 0.4, y: 0 }}
-            exit={{ opacity: 0, y: 10 }}
-            whileHover={{ opacity: 1 }}
-            onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
-            className="fixed bottom-20 right-8 z-[60] p-2 bg-black/20 rounded-full backdrop-blur-sm"
+      <div className="relative z-10 flex flex-col items-center text-center px-4">
+        
+        {/* The "Gempak" 404 Animation */}
+        <div className="relative group">
+          <motion.h1 
+            initial={{ opacity: 0, scale: 0.5 }}
+            animate={{ opacity: 1, scale: 1 }}
+            transition={{ duration: 0.5, type: "spring" }}
+            className="text-[10rem] md:text-[18rem] font-black leading-none tracking-tighter"
           >
-            <ChevronUp size={24} strokeWidth={1.5} className="text-[#a98d32]" />
-          </motion.button>
-        )}
-      </AnimatePresence>
+            <span className="text-transparent bg-clip-text bg-gradient-to-t from-blue-600 via-cyan-400 to-white animate-pulse">
+              404
+            </span>
+          </motion.h1>
+          
+          {/* Glitch Effect Layers */}
+          <motion.span 
+            animate={{ x: [-2, 2, -2], opacity: [0, 0.5, 0] }}
+            transition={{ repeat: Infinity, duration: 0.1 }}
+            className="absolute inset-0 text-[10rem] md:text-[18rem] font-black text-red-500/30 -z-10 translate-x-1"
+          >
+            404
+          </motion.span>
+          <motion.span 
+            animate={{ x: [2, -2, 2], opacity: [0, 0.5, 0] }}
+            transition={{ repeat: Infinity, duration: 0.1, delay: 0.05 }}
+            className="absolute inset-0 text-[10rem] md:text-[18rem] font-black text-blue-500/30 -z-10 -translate-x-1"
+          >
+            404
+          </motion.span>
+        </div>
 
-      <style dangerouslySetInnerHTML={{ __html: `
-        html, body { 
-          background: black; 
-          margin: 0; 
-          padding: 0; 
-          overflow-x: hidden; 
-          height: auto;
-          scroll-behavior: smooth;
-        } 
-        section { 
-          margin: 0 !important;
-          padding-top: 5rem;
-          padding-bottom: 5rem;
-        }
-        #hero { padding: 0 !important; }
-      `}} />
-    </div>
+        {/* Text Content */}
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.3 }}
+          className="-mt-4 md:-mt-10"
+        >
+          <h2 className="text-2xl md:text-5xl font-bold text-white mb-4 tracking-tight">
+            SYSTEM FAILURE: PAGE NOT FOUND
+          </h2>
+          <p className="text-cyan-400/70 font-mono text-sm md:text-base max-w-xl mx-auto mb-12 uppercase tracking-[0.2em]">
+            The requested coordinates do not exist in this sector.
+          </p>
+        </motion.div>
+
+        {/* Action Button */}
+        <motion.div
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ delay: 0.6 }}
+          whileHover={{ scale: 1.05 }}
+          whileTap={{ scale: 0.95 }}
+        >
+          
+        </motion.div>
+
+        {/* Decorative Scanner Line */}
+        <motion.div 
+          animate={{ top: ['0%', '100%', '0%'] }}
+          transition={{ duration: 8, repeat: Infinity, ease: "linear" }}
+          className="absolute left-0 right-0 h-[1px] bg-cyan-500/20 shadow-[0_0_15px_cyan] z-0"
+        />
+      </div>
+    </main>
   );
 }
