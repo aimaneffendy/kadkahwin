@@ -10,11 +10,9 @@ export default function RSVPSection() {
   const [guestList, setGuestList] = useState<string[]>([]);
   const [currentIndex, setCurrentIndex] = useState(0);
   const [loading, setLoading] = useState(false);
-  const [submitted, setSubmitted] = useState(false);
+  const [showSuccess, setShowSuccess] = useState(false); // Guna untuk tunjuk mesej kejayaan sekejap sahaja
 
   useEffect(() => {
-    const hasSubmitted = localStorage.getItem('rsvp_submitted');
-    if (hasSubmitted) setSubmitted(true);
     fetchStats();
   }, []);
 
@@ -44,20 +42,27 @@ export default function RSVPSection() {
     e.preventDefault();
     if (!formData.nama) return alert("Mohon masukkan nama anda.");
     setLoading(true);
+    
     const { error } = await supabase
       .from('rsvp')
       .insert([{ nama: formData.nama, hadir: formData.hadir, pax: formData.hadir ? formData.pax : 0 }]);
 
     if (!error) {
-      localStorage.setItem('rsvp_submitted', 'true');
-      setSubmitted(true);
+      setShowSuccess(true);
+      setFormData({ nama: '', pax: 1, hadir: true }); // Reset form supaya boleh isi lagi
       fetchStats();
+      
+      // Sembunyikan mesej kejayaan selepas 5 saat supaya form muncul balik
+      setTimeout(() => {
+        setShowSuccess(false);
+      }, 5000);
+    } else {
+      alert("Ralat berlaku. Sila cuba lagi.");
     }
     setLoading(false);
   };
 
   return (
-    /* FIX: Buung py-20 px-10 dari sini. Gunakan bg-black. */
     <section className="min-h-screen w-full relative bg-black overflow-hidden flex flex-col font-serif">
       
       {/* BACKGROUND IMAGE */}
@@ -70,11 +75,10 @@ export default function RSVPSection() {
           className="w-full h-full object-cover"
           alt="RSVP Background"
         />
-        {/* FIX: Gradient dari HITAM PEKAT di atas ke TELUS di tengah untuk seamless transition */}
         <div className="absolute inset-0 bg-gradient-to-b from-black via-transparent to-black" />
       </div>
 
-      {/* CONTENT WRAPPER - Letak padding di sini (py-32 px-10) */}
+      {/* CONTENT WRAPPER */}
       <div className="relative z-10 max-w-4xl mx-auto w-full flex flex-col h-full py-32 px-10">
         
         {/* HEADER */}
@@ -94,7 +98,6 @@ export default function RSVPSection() {
             <span className="italic font-extralight lowercase opacity-80 text-white">Kehadiran.</span>
           </h2>
           
-          {/* COMBINED LIVE GUEST CARD */}
           <div className="mt-8 overflow-hidden bg-black/40 border border-[#a98d32]/20 w-fit min-w-[240px] rounded-xl backdrop-blur-md">
             <div className="px-4 py-3 border-b border-[#a98d32]/10 flex items-center gap-3">
               <span className="relative flex h-2 w-2">
@@ -128,8 +131,28 @@ export default function RSVPSection() {
           </div>
         </motion.div>
 
-        {!submitted ? (
-          <motion.form onSubmit={handleSubmit} className="space-y-8">
+        {/* Form sentiasa ada, cuma tunjuk success overlay kalau baru lepas submit */}
+        <div className="relative">
+          <AnimatePresence>
+            {showSuccess && (
+              <motion.div 
+                initial={{ opacity: 0, backdropFilter: "blur(0px)" }} 
+                animate={{ opacity: 1, backdropFilter: "blur(10px)" }} 
+                exit={{ opacity: 0, backdropFilter: "blur(0px)" }}
+                className="absolute inset-0 z-20 bg-black/60 flex flex-col items-center justify-center text-center p-6 rounded-lg"
+              >
+                <div className="mb-4 w-12 h-12 rounded-full border border-[#dbc677]/30 flex items-center justify-center bg-black/40">
+                  <Check size={24} className="text-[#dbc677]" />
+                </div>
+                <h3 className="text-[#dbc677] text-3xl font-light italic mb-2">Terima Kasih!</h3>
+                <p className="text-white/60 text-[10px] tracking-[0.2em] uppercase font-sans">
+                  Respon anda telah direkodkan.
+                </p>
+              </motion.div>
+            )}
+          </AnimatePresence>
+
+          <form onSubmit={handleSubmit} className="space-y-8">
             <div className="relative">
               <label className="text-[#dbc677] text-[9px] tracking-[0.3em] uppercase font-black mb-1 block">Nama Penuh</label>
               <input 
@@ -137,7 +160,7 @@ export default function RSVPSection() {
                 type="text"
                 placeholder="NAMA ANDA"
                 value={formData.nama}
-                className="w-full bg-transparent border-b border-[#a98d32]/40 py-3 text-white text-lg focus:outline-none focus:border-[#dbc677] transition-colors placeholder:text-white/10 uppercase tracking-widest"
+                className="w-full bg-transparent border-b border-[#a98d32]/40 py-3 text-white text-lg focus:outline-none focus:border-[#dbc677] transition-colors placeholder:text-white/60 uppercase tracking-widest"
                 onChange={(e) => setFormData({...formData, nama: e.target.value})}
               />
             </div>
@@ -198,18 +221,8 @@ export default function RSVPSection() {
                 )}
               </button>
             </div>
-          </motion.form>
-        ) : (
-          <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} className="py-12 flex flex-col items-start">
-            <div className="mb-6 w-12 h-12 rounded-full border border-[#dbc677]/30 flex items-center justify-center backdrop-blur-md bg-black/20">
-              <Check size={24} className="text-[#dbc677]" />
-            </div>
-            <h3 className="text-[#dbc677] text-4xl font-light tracking-tighter italic mb-3">Disahkan.</h3>
-            <p className="text-white/60 text-[10px] tracking-[0.2em] uppercase leading-relaxed max-w-xs font-sans">
-              Terima kasih. Respon anda telah selamat direkodkan. Jumpa anda di hari bahagia nanti.
-            </p>
-          </motion.div>
-        )}
+          </form>
+        </div>
 
       </div>
       

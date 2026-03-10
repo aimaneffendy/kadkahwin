@@ -221,8 +221,8 @@ export default function WishSection() {
                 <h3 className="text-[#dbc677] font-serif text-5xl leading-none uppercase tracking-tighter">Bingkisan <br/><span className="italic font-light lowercase text-white/90">ucapan.</span></h3>
               </div>
               <div className="space-y-10">
-                <input value={nama} onChange={(e) => setNama(e.target.value)} type="text" className="w-full bg-transparent border-b border-white/10 py-4 text-sm text-white focus:outline-none focus:border-[#dbc677] transition-all uppercase tracking-widest placeholder:text-white/5" placeholder="NAMA ANDA" />
-                <textarea value={mesej} onChange={(e) => setMesej(e.target.value)} rows={4} className="w-full bg-transparent border-b border-white/10 py-4 text-sm text-white focus:outline-none focus:border-[#dbc677] resize-none transition-all placeholder:text-white/5" placeholder="TITIPKAN UCAPAN..." />
+                <input value={nama} onChange={(e) => setNama(e.target.value)} type="text" className="w-full bg-transparent border-b border-white/10 py-4 text-sm text-white focus:outline-none focus:border-[#ffffff] transition-all uppercase tracking-widest placeholder:text-white/60" placeholder="NAMA ANDA" />
+                <textarea value={mesej} onChange={(e) => setMesej(e.target.value)} rows={4} className="w-full bg-transparent border-b border-white/10 py-4 text-sm text-white focus:outline-none focus:border-[#ffffff] resize-none transition-all placeholder:text-white/60" placeholder="TITIPKAN UCAPAN..." />
                 <button onClick={handleSubmit} disabled={isSending || !nama || !mesej} className="w-full h-14 bg-[#dbc677] flex items-center justify-center gap-4 group disabled:opacity-20 transition-all shadow-xl">
                   <span className="text-black text-[11px] font-black tracking-[0.4em] uppercase">{isSending ? 'Sedang Menghantar...' : 'Hantar Ucapan'}</span>
                   <Send size={14} className="text-black group-hover:translate-x-1 transition-transform" />
