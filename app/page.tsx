@@ -1,6 +1,6 @@
 'use client';
 import { useState, useRef, useEffect } from 'react';
-import { AnimatePresence, motion } from 'framer-motion';
+import { AnimatePresence, motion, useScroll, useSpring } from 'framer-motion'; // Ditambah: useScroll, useSpring
 import { Pause, Play, ChevronUp } from 'lucide-react';
 
 import EntranceSection from '../components/EntranceSection';
@@ -17,6 +17,14 @@ export default function KadKahwin() {
   const [mounted, setMounted] = useState(false);
   const [showScrollTop, setShowScrollTop] = useState(false);
   const audioRef = useRef<HTMLAudioElement>(null);
+
+  // --- LOGIK PROGRESS BAR (DITAMBAH) ---
+  const { scrollYProgress } = useScroll();
+  const scaleY = useSpring(scrollYProgress, {
+    stiffness: 100,
+    damping: 30,
+    restDelta: 0.001
+  });
 
   useEffect(() => { setMounted(true); }, []);
 
@@ -77,69 +85,77 @@ export default function KadKahwin() {
 
       {/* 2. Main Content */}
       {isOpen && (
-        <main className="relative w-full overflow-x-hidden bg-black">
-          
-          <div id="hero" className="relative">
-            <HeroSection isOpen={isOpen} />
+        <>
+          {/* PROGRESS BAR BELAH KIRI (DITAMBAH) */}
+          <motion.div
+            className="fixed left-0 top-0 bottom-0 w-[3px] bg-[#dbc677] z-[9999] origin-top shadow-[0_0_10px_rgba(219,198,119,0.3)]"
+            style={{ scaleY }}
+          />
+
+          <main className="relative w-full overflow-x-hidden bg-black">
             
-            {/* Soundwave Animasi */}
-            <div className="absolute bottom-24 left-1/2 -translate-x-1/2 flex flex-col items-center gap-2 opacity-40 z-20 pointer-events-none">
-              <div className="flex items-end gap-[2px] h-3">
-                {[...Array(12)].map((_, i) => (
-                  <motion.div
-                    key={i}
-                    animate={isPlay ? { height: [2, 10, 2] } : { height: 1 }}
-                    transition={{ repeat: Infinity, duration: 0.5 + Math.random() * 0.5 }}
-                    className="w-[1.5px] bg-[#a98d32] rounded-full"
-                  />
-                ))}
+            <div id="hero" className="relative">
+              <HeroSection isOpen={isOpen} />
+              
+              {/* Soundwave Animasi */}
+              <div className="absolute bottom-24 left-1/2 -translate-x-1/2 flex flex-col items-center gap-2 opacity-40 z-20 pointer-events-none">
+                <div className="flex items-end gap-[2px] h-3">
+                  {[...Array(12)].map((_, i) => (
+                    <motion.div
+                      key={i}
+                      animate={isPlay ? { height: [2, 10, 2] } : { height: 1 }}
+                      transition={{ repeat: Infinity, duration: 0.5 + Math.random() * 0.5 }}
+                      className="w-[1.5px] bg-[#a98d32] rounded-full"
+                    />
+                  ))}
+                </div>
+                <span className="text-[6px] tracking-[0.6em] uppercase text-[#a98d32]">Rindu Lukisan</span>
               </div>
-              <span className="text-[6px] tracking-[0.6em] uppercase text-[#a98d32]">Rindu Lukisan</span>
             </div>
-          </div>
 
-          <QuoteSection />
-          <DetailsSection />
-          <LocationSection />
-          <RSVPSection />
-          <WishSection />
+            <QuoteSection />
+            <DetailsSection />
+            <LocationSection />
+            <RSVPSection />
+            <WishSection />
 
-          {/* Floating Player Control */}
-          <div className="fixed bottom-8 right-8 z-50">
-            <button 
-              onClick={() => { 
-                if (isPlay) audioRef.current?.pause(); 
-                else audioRef.current?.play(); 
-                setIsPlay(!isPlay); 
-              }} 
-              className="w-10 h-10 rounded-full border border-[#fbf8f4]/10 flex items-center justify-center bg-black/40 backdrop-blur-xl text-[#dbc677] shadow-xl"
-            >
-              {isPlay ? <Pause size={14} /> : <Play size={14} className="ml-0.5" />}
-            </button>
-          </div>
+            {/* Floating Player Control */}
+            <div className="fixed bottom-8 right-8 z-50">
+              <button 
+                onClick={() => { 
+                  if (isPlay) audioRef.current?.pause(); 
+                  else audioRef.current?.play(); 
+                  setIsPlay(!isPlay); 
+                }} 
+                className="w-10 h-10 rounded-full border border-[#fbf8f4]/10 flex items-center justify-center bg-black/40 backdrop-blur-xl text-[#dbc677] shadow-xl"
+              >
+                {isPlay ? <Pause size={14} /> : <Play size={14} className="ml-0.5" />}
+              </button>
+            </div>
 
-          <footer className="py-24 flex flex-col items-center justify-center bg-black relative overflow-hidden">
-            <motion.div 
-              initial={{ height: 0, opacity: 0 }}
-              whileInView={{ height: 40, opacity: 0.3 }}
-              viewport={{ once: false }}
-              transition={{ duration: 1 }}
-              className="w-[1px] bg-[#a98d32] mb-8"
-            />
-            <motion.div
-              initial={{ opacity: 0, letterSpacing: "0.2em", y: 10 }}
-              whileInView={{ opacity: 0.4, letterSpacing: "0.6em", y: 0 }}
-              viewport={{ once: false }}
-              transition={{ duration: 1.5, ease: "easeOut" }}
-              className="text-[#dbc677] text-[11px] font-bold text-center"
-            >
-              #Aiman&Adinda
-            </motion.div>
-            <p className="mt-4 text-[8px] tracking-[0.2em] uppercase text-white/20">
-              Terima Kasih
-            </p>
-          </footer>
-        </main>
+            <footer className="py-24 flex flex-col items-center justify-center bg-black relative overflow-hidden">
+              <motion.div 
+                initial={{ height: 0, opacity: 0 }}
+                whileInView={{ height: 40, opacity: 0.3 }}
+                viewport={{ once: false }}
+                transition={{ duration: 1 }}
+                className="w-[1px] bg-[#a98d32] mb-8"
+              />
+              <motion.div
+                initial={{ opacity: 0, letterSpacing: "0.2em", y: 10 }}
+                whileInView={{ opacity: 0.4, letterSpacing: "0.6em", y: 0 }}
+                viewport={{ once: false }}
+                transition={{ duration: 1.5, ease: "easeOut" }}
+                className="text-[#dbc677] text-[11px] font-bold text-center"
+              >
+                #Aiman&Adinda
+              </motion.div>
+              <p className="mt-4 text-[8px] tracking-[0.2em] uppercase text-white/20">
+                Terima Kasih
+              </p>
+            </footer>
+          </main>
+        </>
       )}
 
       {/* 3. Floating Arrow Up */}
