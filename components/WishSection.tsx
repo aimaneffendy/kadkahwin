@@ -92,7 +92,7 @@ export default function WishSection() {
     <section className="min-h-screen w-full relative bg-black overflow-hidden flex flex-col font-serif">
       
       <div className="absolute inset-0 w-full h-full z-0 pointer-events-none">
-        <img src="/backgroundmain3.webp" className="w-full h-full object-cover object-right opacity-40" alt="Wish Background" />
+        <img src="/backgroundmain3.webp" className="w-full h-full object-cover object-right opacity-90" alt="Wish Background" />
         <div className="absolute inset-0 bg-gradient-to-b from-black via-black/20 to-black" />
       </div>
 

@@ -36,8 +36,8 @@ export default function QuoteSection() {
       <div className="absolute inset-0 z-0">
         <motion.img 
           initial={{ opacity: 0 }}
-          whileInView={{ opacity: 0.3 }}
-          transition={{ duration: 2 }}
+          whileInView={{ opacity: 4 }}
+          transition={{ duration: 1.5 }}
           src="/backgroundmain3.webp" 
           className="w-full h-full object-cover object-left"
           alt="background"
@@ -82,10 +82,10 @@ export default function QuoteSection() {
             transition={{ duration: 1.2, delay: 0.4 }}
             className="pt-10 border-t border-white/10"
           >
-            <p className="text-white/50 text-[13px] md:text-xs tracking-[0.3em] uppercase leading-loose font-light">
-              Semoga Penyatuan Ini Diberkati Kekal <br className="hidden md:block" /> 
-              hingga ke Syurga.
-            </p>
+            <p className="text-white text-[13px] md:text-xs tracking-[0.3em] uppercase leading-loose font-light">
+    Semoga Penyatuan Ini Diberkati Kekal <br className="hidden md:block" /> 
+    hingga ke Syurga.
+  </p>
           </motion.div>
         </div>
       </div>

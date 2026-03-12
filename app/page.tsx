@@ -1,6 +1,6 @@
 'use client';
-import { useState, useRef, useEffect } from 'react';
-import { AnimatePresence, motion, useScroll, useSpring } from 'framer-motion'; // Ditambah: useScroll, useSpring
+import { useState, useRef, useEffect, useMemo } from 'react';
+import { AnimatePresence, motion, useScroll, useSpring, useTransform } from 'framer-motion';
 import { Pause, Play, ChevronUp } from 'lucide-react';
 
 import EntranceSection from '../components/EntranceSection';
@@ -18,17 +18,19 @@ export default function KadKahwin() {
   const [showScrollTop, setShowScrollTop] = useState(false);
   const audioRef = useRef<HTMLAudioElement>(null);
 
-  // --- LOGIK PROGRESS BAR (DITAMBAH) ---
-  const { scrollYProgress } = useScroll();
+  // --- LOGIK PROGRESS BAR ---
+  const { scrollY, scrollYProgress } = useScroll();
   const scaleY = useSpring(scrollYProgress, {
     stiffness: 100,
     damping: 30,
     restDelta: 0.001
   });
 
+  const barOpacity = useTransform(scrollY, [0, 400], [0, 1]);
+
   useEffect(() => { setMounted(true); }, []);
 
-  // --- LOGIK MUSIC TOGGLE DARI VIDEO POPUP ---
+  // --- LOGIK MUZIK ---
   useEffect(() => {
     const handleMusicToggle = (e: any) => {
       const shouldPlay = e.detail.play;
@@ -42,12 +44,11 @@ export default function KadKahwin() {
         }
       }
     };
-
     window.addEventListener('toggleMusic', handleMusicToggle);
     return () => window.removeEventListener('toggleMusic', handleMusicToggle);
   }, []);
 
-  // Logic Scroll untuk Arrow Up
+  // --- LOGIK SCROLL TOP ---
   useEffect(() => {
     const handleScroll = () => {
       setShowScrollTop(window.scrollY > 600);
@@ -61,9 +62,7 @@ export default function KadKahwin() {
     setIsPlay(true);
     setTimeout(() => { 
       if (audioRef.current) {
-        audioRef.current.play().catch(() => {
-          console.log("Autoplay dicegah oleh browser");
-        });
+        audioRef.current.play().catch(() => {});
       }
     }, 500);
   };
@@ -74,7 +73,6 @@ export default function KadKahwin() {
     <div className="bg-black text-[#fbf8f4] font-serif relative min-h-screen">
       <audio ref={audioRef} loop src="/rindulukisan.mp3" />
 
-      {/* 1. Entrance Section */}
       <AnimatePresence mode="wait">
         {!isOpen && (
           <div className="fixed inset-0 z-[100]">
@@ -83,21 +81,26 @@ export default function KadKahwin() {
         )}
       </AnimatePresence>
 
-      {/* 2. Main Content */}
       {isOpen && (
         <>
-          {/* PROGRESS BAR BELAH KIRI (DITAMBAH) */}
-          <motion.div
-            className="fixed left-0 top-0 bottom-0 w-[3px] bg-[#dbc677] z-[9999] origin-top shadow-[0_0_10px_rgba(219,198,119,0.3)]"
-            style={{ scaleY }}
-          />
+          {/* PROGRESS BAR */}
+          <motion.div 
+            style={{ opacity: barOpacity }} 
+            className="fixed left-4 md:left-6 top-1/2 -translate-y-1/2 z-[9999] flex flex-col items-center pointer-events-none"
+          >
+            <div className="h-[150px] w-[1px] bg-white/10 relative overflow-hidden rounded-full">
+              <motion.div 
+                className="absolute top-0 left-0 w-full bg-[#dbc677] origin-top shadow-[0_0_8px_rgba(219,198,119,0.5)]"
+                style={{ scaleY, height: '100%' }}
+              />
+            </div>
+          </motion.div>
 
           <main className="relative w-full overflow-x-hidden bg-black">
-            
             <div id="hero" className="relative">
               <HeroSection isOpen={isOpen} />
               
-              {/* Soundwave Animasi */}
+              {/* MUSIC VISUALIZER HINT */}
               <div className="absolute bottom-24 left-1/2 -translate-x-1/2 flex flex-col items-center gap-2 opacity-40 z-20 pointer-events-none">
                 <div className="flex items-end gap-[2px] h-3">
                   {[...Array(12)].map((_, i) => (
@@ -119,7 +122,7 @@ export default function KadKahwin() {
             <RSVPSection />
             <WishSection />
 
-            {/* Floating Player Control */}
+            {/* FLOATING MUSIC CONTROL */}
             <div className="fixed bottom-8 right-8 z-50">
               <button 
                 onClick={() => { 
@@ -133,32 +136,74 @@ export default function KadKahwin() {
               </button>
             </div>
 
-            <footer className="py-24 flex flex-col items-center justify-center bg-black relative overflow-hidden">
-              <motion.div 
-                initial={{ height: 0, opacity: 0 }}
-                whileInView={{ height: 40, opacity: 0.3 }}
-                viewport={{ once: false }}
-                transition={{ duration: 1 }}
-                className="w-[1px] bg-[#a98d32] mb-8"
-              />
+            {/* --- UPDATED FOOTER WITH FLOWER ANIMATION --- */}
+            <footer className="py-32 flex flex-col items-center justify-center bg-black relative overflow-hidden">
+
+              {/* Thank You Message */}
               <motion.div
-                initial={{ opacity: 0, letterSpacing: "0.2em", y: 10 }}
-                whileInView={{ opacity: 0.4, letterSpacing: "0.6em", y: 0 }}
-                viewport={{ once: false }}
-                transition={{ duration: 1.5, ease: "easeOut" }}
-                className="text-[#dbc677] text-[11px] font-bold text-center"
+                initial={{ opacity: 0, y: 20 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                transition={{ duration: 1 }}
+                className="text-center px-10 space-y-4"
               >
-                #Aiman&Adinda
+                <h3 className="text-[#dbc677] text-2xl md:text-3xl font-light italic tracking-wide">
+                  Terima Kasih
+                </h3>
+                <p className="max-w-xs mx-auto text-white/90 text-[10px] md:text-xs leading-relaxed tracking-[0.2em] uppercase font-light">
+                  Kehadiran serta doa restu kalian amatlah kami hargai dalam meraikan hari bahagia ini.
+                </p>
               </motion.div>
-              <p className="mt-4 text-[8px] tracking-[0.2em] uppercase text-white/20">
-                Terima Kasih
-              </p>
+
+              <motion.div 
+                initial={{ width: 0, opacity: 0 }}
+                whileInView={{ width: 40, opacity: 0.2 }}
+                transition={{ duration: 1 }}
+                className="h-[1px] bg-[#a98d32] my-10"
+              />
+
+              {/* Hashtag & Credits */}
+              <motion.div
+                initial={{ opacity: 0 }}
+                whileInView={{ opacity: 0.5 }}
+                transition={{ duration: 1.5 }}
+                className="flex flex-col items-center gap-2"
+              >
+                <span className="text-[#dbc677] text-[10px] font-bold tracking-[0.6em] uppercase">
+                  #Aiman&Adinda
+                </span>
+                <span className="text-white/40 text-[10px] tracking-[0.1em] uppercase">
+                  14.06.26
+                </span>
+              </motion.div>
+
+              {/* Subtle Dust Rising at Footer */}
+              <div className="absolute inset-0 pointer-events-none">
+                {[...Array(6)].map((_, i) => (
+                  <motion.div
+                    key={i}
+                    className="absolute w-1 h-1 bg-[#dbc677] rounded-full blur-[1px]"
+                    animate={{ 
+                      y: [0, -80], 
+                      opacity: [0, 0.5, 0] 
+                    }}
+                    transition={{ 
+                      duration: 3 + Math.random() * 2, 
+                      repeat: Infinity, 
+                      delay: i * 0.5 
+                    }}
+                    style={{ 
+                      left: `${15 + (i * 15)}%`, 
+                      bottom: '5%' 
+                    }}
+                  />
+                ))}
+              </div>
             </footer>
           </main>
         </>
       )}
 
-      {/* 3. Floating Arrow Up */}
+      {/* SCROLL TO TOP BUTTON */}
       <AnimatePresence>
         {showScrollTop && (
           <motion.button 
@@ -174,6 +219,7 @@ export default function KadKahwin() {
         )}
       </AnimatePresence>
 
+      {/* GLOBAL STYLES */}
       <style dangerouslySetInnerHTML={{ __html: `
         html, body { 
           background: black; 
@@ -182,7 +228,12 @@ export default function KadKahwin() {
           overflow-x: hidden; 
           height: auto;
           scroll-behavior: smooth;
+          -ms-overflow-style: none;
+          scrollbar-width: none;
         } 
+        html::-webkit-scrollbar, body::-webkit-scrollbar {
+          display: none;
+        }
         section { 
           margin: 0 !important;
           padding-top: 5rem;

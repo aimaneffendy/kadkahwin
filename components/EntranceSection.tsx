@@ -102,7 +102,7 @@ export default function EntranceSection({ onOpen }: EntranceSectionProps) {
         <img 
           src="/background1.webp" 
           alt="Wedding Background" 
-          className="w-full h-full object-cover opacity-60"
+          className="w-full h-full object-cover opacity-90"
         />
         <div className="absolute inset-0 bg-gradient-to-b from-black/60 via-transparent to-black" />
       </motion.div>

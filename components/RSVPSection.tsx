@@ -1,8 +1,33 @@
 'use client';
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Check, Loader2 } from 'lucide-react';
 import { supabase } from '@/lib/supabase'; 
+
+// 1. KOMPONEN DUST (DIBETULKAN)
+const GoldenDust = ({ delay, duration, x, y, size }: { delay: number; duration: number; x: number; y: number; size: number }) => (
+  <motion.div
+    className="absolute rounded-full bg-[#dbc677] blur-[0.5px]"
+    initial={{ opacity: 0, x: `${x}vw`, y: `${y}vh` }}
+    animate={{ 
+      opacity: [0, 0.7, 0], // Opacity lebih tinggi
+      y: [`${y}vh`, `${y - 20}vh`],
+      x: [`${x}vw`, `${x + (Math.random() > 0.5 ? 5 : -5)}vw`],
+    }}
+    transition={{ 
+      duration, 
+      delay, 
+      repeat: Infinity, 
+      ease: "linear" 
+    }}
+    style={{ 
+      width: size, 
+      height: size, 
+      zIndex: 40, // Paksa duduk atas sekali sebelum content
+      boxShadow: '0 0 8px rgba(219, 198, 119, 0.8)' // Tambah glow
+    }}
+  />
+);
 
 export default function RSVPSection() {
   const [formData, setFormData] = useState({ nama: '', pax: 1, hadir: true });
@@ -10,7 +35,19 @@ export default function RSVPSection() {
   const [guestList, setGuestList] = useState<string[]>([]);
   const [currentIndex, setCurrentIndex] = useState(0);
   const [loading, setLoading] = useState(false);
-  const [showSuccess, setShowSuccess] = useState(false); // Guna untuk tunjuk mesej kejayaan sekejap sahaja
+  const [showSuccess, setShowSuccess] = useState(false);
+
+  // 2. JANA PARTICLES (DIBESARKAN)
+  const dustParticles = useMemo(() => {
+    return Array.from({ length: 40 }).map((_, i) => ({
+      id: i,
+      delay: Math.random() * 5,
+      duration: 6 + Math.random() * 6,
+      x: Math.random() * 100,
+      y: Math.random() * 100,
+      size: 1.5 + Math.random() * 2, // Saiz besar sikit
+    }));
+  }, []);
 
   useEffect(() => {
     fetchStats();
@@ -49,10 +86,8 @@ export default function RSVPSection() {
 
     if (!error) {
       setShowSuccess(true);
-      setFormData({ nama: '', pax: 1, hadir: true }); // Reset form supaya boleh isi lagi
+      setFormData({ nama: '', pax: 1, hadir: true });
       fetchStats();
-      
-      // Sembunyikan mesej kejayaan selepas 5 saat supaya form muncul balik
       setTimeout(() => {
         setShowSuccess(false);
       }, 5000);
@@ -65,21 +100,28 @@ export default function RSVPSection() {
   return (
     <section className="min-h-screen w-full relative bg-black overflow-hidden flex flex-col font-serif">
       
-      {/* BACKGROUND IMAGE */}
-      <div className="absolute inset-0 w-full h-full z-0">
+      {/* 3. BACKGROUND & GRADIENT LAYER (Z-0 hingga Z-10) */}
+      <div className="absolute inset-0 w-full h-full z-0 overflow-hidden">
         <motion.img 
           initial={{ opacity: 0 }}
-          whileInView={{ opacity: 0.4 }}
-          transition={{ duration: 2.5 }}
+          whileInView={{ opacity: 2 }} 
+          transition={{ duration: 2 }}
           src="/background2.webp" 
           className="w-full h-full object-cover"
+          style={{ filter: 'brightness(1.5) contrast(1.2)' }}
           alt="RSVP Background"
         />
-        <div className="absolute inset-0 bg-gradient-to-b from-black via-transparent to-black" />
+        {/* Gradient Transition dari Section Atas */}
+        <div className="absolute inset-0 bg-gradient-to-b from-black via-black/30 to-black z-10" />
       </div>
 
-      {/* CONTENT WRAPPER */}
-      <div className="relative z-10 max-w-4xl mx-auto w-full flex flex-col h-full py-32 px-10">
+      {/* 4. GOLDEN DUST LAYER (Z-40) */}
+      <div className="absolute inset-0 z-40 pointer-events-none">
+        {dustParticles.map(p => <GoldenDust key={p.id} {...p} />)}
+      </div>
+
+      {/* 5. CONTENT WRAPPER (Z-50) */}
+      <div className="relative z-50 max-w-4xl mx-auto w-full flex flex-col h-full py-32 px-10">
         
         {/* HEADER */}
         <motion.div
@@ -98,7 +140,7 @@ export default function RSVPSection() {
             <span className="italic font-extralight lowercase opacity-80 text-white">Kehadiran.</span>
           </h2>
           
-          <div className="mt-8 overflow-hidden bg-black/40 border border-[#a98d32]/20 w-fit min-w-[240px] rounded-xl backdrop-blur-md">
+          <div className="mt-8 overflow-hidden bg-black/60 border border-[#a98d32]/30 w-fit min-w-[240px] rounded-xl backdrop-blur-md shadow-2xl">
             <div className="px-4 py-3 border-b border-[#a98d32]/10 flex items-center gap-3">
               <span className="relative flex h-2 w-2">
                 <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-[#dbc677] opacity-75"></span>
@@ -131,7 +173,7 @@ export default function RSVPSection() {
           </div>
         </motion.div>
 
-        {/* Form sentiasa ada, cuma tunjuk success overlay kalau baru lepas submit */}
+        {/* FORM CONTAINER */}
         <div className="relative">
           <AnimatePresence>
             {showSuccess && (
@@ -139,20 +181,18 @@ export default function RSVPSection() {
                 initial={{ opacity: 0, backdropFilter: "blur(0px)" }} 
                 animate={{ opacity: 1, backdropFilter: "blur(10px)" }} 
                 exit={{ opacity: 0, backdropFilter: "blur(0px)" }}
-                className="absolute inset-0 z-20 bg-black/60 flex flex-col items-center justify-center text-center p-6 rounded-lg"
+                className="absolute inset-0 z-[100] bg-black/80 flex flex-col items-center justify-center text-center p-6 rounded-lg border border-[#dbc677]/20"
               >
                 <div className="mb-4 w-12 h-12 rounded-full border border-[#dbc677]/30 flex items-center justify-center bg-black/40">
                   <Check size={24} className="text-[#dbc677]" />
                 </div>
                 <h3 className="text-[#dbc677] text-3xl font-light italic mb-2">Terima Kasih!</h3>
-                <p className="text-white/60 text-[10px] tracking-[0.2em] uppercase font-sans">
-                  Respon anda telah direkodkan.
-                </p>
+                <p className="text-white/60 text-[10px] tracking-[0.2em] uppercase font-sans">Respon anda telah direkodkan.</p>
               </motion.div>
             )}
           </AnimatePresence>
 
-          <form onSubmit={handleSubmit} className="space-y-8">
+          <form onSubmit={handleSubmit} className="space-y-8 relative z-50">
             <div className="relative">
               <label className="text-[#dbc677] text-[9px] tracking-[0.3em] uppercase font-black mb-1 block">Nama Penuh</label>
               <input 
@@ -160,7 +200,7 @@ export default function RSVPSection() {
                 type="text"
                 placeholder="NAMA ANDA"
                 value={formData.nama}
-                className="w-full bg-transparent border-b border-[#a98d32]/40 py-3 text-white text-lg focus:outline-none focus:border-[#dbc677] transition-colors placeholder:text-white/60 uppercase tracking-widest"
+                className="w-full bg-transparent border-b border-[#a98d32]/40 py-3 text-white text-lg focus:outline-none focus:border-[#dbc677] transition-colors placeholder:text-white/30 uppercase tracking-widest"
                 onChange={(e) => setFormData({...formData, nama: e.target.value})}
               />
             </div>
@@ -172,14 +212,14 @@ export default function RSVPSection() {
                   <button
                     type="button"
                     onClick={() => setFormData({...formData, hadir: true})}
-                    className={`flex-1 py-3 border transition-all text-[9px] tracking-[0.2em] uppercase font-bold backdrop-blur-md ${
+                    className={`flex-1 py-4 border transition-all text-[9px] tracking-[0.2em] uppercase font-bold backdrop-blur-md ${
                       formData.hadir ? 'bg-[#dbc677] text-black border-[#dbc677]' : 'border-[#a98d32]/40 text-white/40 bg-black/40'
                     }`}
                   > Akan Hadir </button>
                   <button
                     type="button"
                     onClick={() => setFormData({...formData, hadir: false})}
-                    className={`flex-1 py-3 border transition-all text-[9px] tracking-[0.2em] uppercase font-bold backdrop-blur-md ${
+                    className={`flex-1 py-4 border transition-all text-[9px] tracking-[0.2em] uppercase font-bold backdrop-blur-md ${
                       !formData.hadir ? 'bg-white text-black border-white' : 'border-[#a98d32]/40 text-white/40 bg-black/40'
                     }`}
                   > Maaf </button>
@@ -196,7 +236,7 @@ export default function RSVPSection() {
                           key={num}
                           type="button"
                           onClick={() => setFormData({...formData, pax: num})}
-                          className={`w-10 h-10 border transition-all text-[13px] font-bold font-sans backdrop-blur-md ${
+                          className={`w-11 h-11 border transition-all text-[13px] font-bold font-sans backdrop-blur-md ${
                             formData.pax === num ? 'border-[#dbc677] text-[#dbc677] bg-[#dbc677]/20' : 'border-[#a98d32]/30 text-white/20 bg-black/40'
                           }`}
                         > {num} </button>
@@ -211,7 +251,7 @@ export default function RSVPSection() {
               <button
                 disabled={loading || !formData.nama}
                 type="submit"
-                className="w-full md:w-max md:px-12 h-14 bg-[#dbc677] flex items-center justify-center gap-4 transition-all shadow-xl disabled:opacity-20 active:scale-[0.98]"
+                className="w-full md:w-max md:px-12 h-16 bg-[#dbc677] flex items-center justify-center gap-4 transition-all shadow-xl disabled:opacity-20 active:scale-[0.98] relative z-[60]"
               >
                 {loading ? <Loader2 className="animate-spin text-black" size={18} /> : (
                   <>
@@ -223,11 +263,10 @@ export default function RSVPSection() {
             </div>
           </form>
         </div>
-
       </div>
       
-      {/* Texture Overlay */}
-      <div className="absolute inset-0 opacity-[0.03] pointer-events-none mix-blend-overlay bg-[url('https://www.transparenttextures.com/patterns/black-paper.png')]" />
+      {/* 6. TEXTURE OVERLAY (Z-100) */}
+      <div className="absolute inset-0 opacity-[0.05] pointer-events-none mix-blend-overlay bg-[url('https://www.transparenttextures.com/patterns/black-paper.png')] z-[100]" />
     </section>
   );
 }

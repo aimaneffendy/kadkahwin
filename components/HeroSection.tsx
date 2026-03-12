@@ -23,8 +23,8 @@ export default function HeroSection({ isOpen }: { isOpen: boolean }) {
             backgroundImage: "url('/backgroundmain2.png')",
             backgroundSize: 'cover', 
             backgroundPosition: 'center 40%', 
-            filter: 'brightness(0.55)', 
-            transform: 'scale(1.1)', 
+            filter: 'brightness(3)', 
+            transform: 'scale(1)', 
           }}
         />
         {/* Gradient diperkukuh: Atas (gelap sikit), Bawah (hitam pekat) */}
