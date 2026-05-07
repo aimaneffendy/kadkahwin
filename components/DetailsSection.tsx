@@ -2,14 +2,14 @@
 import { motion } from 'framer-motion';
 import { useMemo } from 'react';
 
-// Komponen Dust - Dinaikkan z-index ke 20
+// Komponen Dust - Untuk efek partikel emas
 const GoldenDust = ({ delay, duration, x, y, size }: { delay: number; duration: number; x: number; y: number; size: number }) => (
   <motion.div
     className="absolute rounded-full bg-[#dbc677] blur-[0.5px] z-20"
     initial={{ opacity: 0, x: `${x}vw`, y: `${y}vh` }}
     animate={{ 
-      opacity: [0, 0.8, 0], // Tingkatkan opacity puncak ke 0.8
-      y: [`${y}vh`, `${y - 20}vh`], // Gerakan lebih jauh sedikit
+      opacity: [0, 0.8, 0],
+      y: [`${y}vh`, `${y - 20}vh`],
       x: [`${x}vw`, `${x + (Math.random() > 0.5 ? 3 : -3)}vw`],
     }}
     transition={{ duration, delay, repeat: Infinity, ease: "linear" }}
@@ -29,20 +29,20 @@ export default function DetailsSection() {
   };
 
   const dustParticles = useMemo(() => {
-    return Array.from({ length: 40 }).map((_, i) => ({ // Tambah jumlah ke 40
+    return Array.from({ length: 40 }).map((_, i) => ({
       id: i,
       delay: Math.random() * 10,
       duration: 7 + Math.random() * 8,
       x: Math.random() * 100,
       y: Math.random() * 100,
-      size: 1.2 + Math.random() * 1.8, // Saiz besar sikit supaya nampak
+      size: 1.2 + Math.random() * 1.8,
     }));
   }, []);
 
   return (
     <section className="w-full min-h-screen bg-black relative flex flex-col items-center justify-center overflow-hidden font-serif">
       
-      {/* 1. BACKGROUND LAYER (Z-0 hingga Z-10) */}
+      {/* 1. BACKGROUND LAYER */}
       <div className="absolute inset-0 z-0 overflow-hidden">
         <motion.img 
           initial={{ opacity: 0 }}
@@ -53,18 +53,16 @@ export default function DetailsSection() {
           style={{ filter: 'brightness(0.9) contrast(1.2)' }} 
           alt="background"
         />
-        
-        {/* Gradient Overlays - Kekalkan z-10 */}
         <div className="absolute inset-0 bg-gradient-to-b from-black via-black/20 to-transparent h-1/2 z-10" />
         <div className="absolute bottom-0 left-0 right-0 h-1/2 bg-gradient-to-t from-black via-black/20 to-transparent z-10" />
       </div>
 
-      {/* 2. GOLDEN DUST (Z-20) - Pastikan z-index lebih tinggi dari gradient */}
+      {/* 2. GOLDEN DUST */}
       <div className="absolute inset-0 z-20 pointer-events-none">
         {dustParticles.map(p => <GoldenDust key={p.id} {...p} />)}
       </div>
 
-      {/* 3. MAIN CONTENT WRAPPER (Z-30) */}
+      {/* 3. MAIN CONTENT WRAPPER */}
       <motion.div 
         variants={containerVariants}
         initial="hidden"
@@ -72,23 +70,34 @@ export default function DetailsSection() {
         viewport={{ once: false, amount: 0.2 }}
         className="relative z-30 w-full max-w-2xl flex flex-col items-center text-center space-y-6 md:space-y-10 px-6 py-32"
       >
-        <motion.div variants={itemVariants} className="mb-2">
-          <h2 className="text-[#fbf8f4] text-4xl md:text-6xl font-normal opacity-95 leading-relaxed">
-            السَّلاَمُ عَلَيْكُمْ
-          </h2>
-          <div className="h-[1px] w-12 bg-[#dbc677]/40 mx-auto mt-2 shadow-[0_0_10px_rgba(219,198,119,0.4)]" />
+        {/* SECTION: NAMA IBU BAPA */}
+        <motion.div variants={itemVariants} className="space-y-4">
+          
+          {/* Pihak Lelaki */}
+          <div className="space-y-1">
+            <h3 className="text-[#dbc677] text-lg md:text-2xl tracking-[0.1em] uppercase font-medium">
+              NOOR EFFENDY BIN MOHD NOR & RABA'IAH BINTI KODRI
+            </h3>
+            <p className="text-white/60 text-[10px] md:text-xs tracking-[0.2em] uppercase font-light">
+              (IBU BAPA PENGANTIN LELAKI)
+            </p>
+          </div>
+
+          {/* Simbol Pemisah */}
+          <div className="text-[#dbc677] opacity-40 italic font-serif text-xl md:text-2xl">&</div>
+
+          {/* Pihak Perempuan */}
+          <div className="space-y-1">
+            <h3 className="text-[#dbc677] text-lg md:text-2xl tracking-[0.1em] uppercase font-medium">
+              AYU YULIANA
+            </h3>
+            <p className="text-white/60 text-[10px] md:text-xs tracking-[0.2em] uppercase font-light">
+              (IBU PENGANTIN PEREMPUAN)
+            </p>
+          </div>
         </motion.div>
 
-        <motion.div variants={itemVariants} className="space-y-2">
-          <h3 className="text-[#dbc677] text-lg md:text-xl tracking-[0.15em] uppercase font-light leading-tight">
-            Noor Effendy bin Mohd Nor
-          </h3>
-          <p className="text-white/30 text-sm italic font-serif">&</p>
-          <h3 className="text-[#dbc677] text-lg md:text-xl tracking-[0.15em] uppercase font-light leading-tight">
-            Raba'iah binti Kodri
-          </h3>
-        </motion.div>
-
+        {/* SECTION: JEMPUTAN */}
         <motion.div variants={itemVariants} className="space-y-5">
           <p className="text-white/70 text-[13px] md:text-sm tracking-[0.2em] uppercase font-light leading-relaxed">
             Kami Dengan Rasa Penuh Kesyukuran <br/> & Sukacita Menjemput
@@ -105,6 +114,7 @@ export default function DetailsSection() {
           </p>
         </motion.div>
 
+        {/* SECTION: NAMA PENGANTIN */}
         <motion.div variants={itemVariants} className="w-full space-y-5 py-6 relative">
           <div className="absolute left-1/2 -translate-x-1/2 top-0 h-[0.5px] w-32 bg-gradient-to-r from-transparent via-[#a98d32]/40 to-transparent" />
           
@@ -146,7 +156,7 @@ export default function DetailsSection() {
         </motion.div>
       </motion.div>
 
-      {/* 4. TEXTURE OVERLAY (Paling atas) */}
+      {/* 4. TEXTURE OVERLAY */}
       <div className="absolute inset-0 opacity-[0.05] pointer-events-none bg-[url('https://www.transparenttextures.com/patterns/black-paper.png')] z-50" />
     </section>
   );
